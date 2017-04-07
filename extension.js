@@ -11,56 +11,63 @@ const statusBarItems = {};
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
-    // THIS IS GOING TO BE DRAMATICALLY REFACTORED
-    const settingsPath = `${vscode.workspace.rootPath}/.vscode/commandbar.json`;
-    const channel = vscode.window.createOutputChannel('commandbar');
-
-    if(fs.existsSync(settingsPath)) {
-        const settings = JSON.parse(fs.readFileSync(settingsPath));
-        settings.commands.forEach( (command) => {
-            const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-            const commandId = `extension.commandbar.${command.id}`;
-            const inProgress = `${command.text} (in progress)`;
-            statusBarItem.text = command.text;
-            statusBarItem.tooltip = command.tooltip;
-            statusBarItem.color = command.color;
-            statusBarItem.command = commandId;
-            statusBarItem.show();
-            statusBarItems[commandId] = statusBarItem;
-            
-            const disposableCommand = vscode.commands.registerCommand(commandId, () => {
-                let process = statusBarItems[commandId].process;
-                if(process) {
-                    vscode.window.showQuickPick(['Terminate and Execute', 'Terminate', 'Execute', 'Cancel'])
-                        .then((option) => {
-                            if(option === 'Terminate and Execute') {
-                                kill(process.pid, 'SIGTERM', () => statusBarItem.text = inProgress);
-                                channel.appendLine('Terminated');
-                                channel.show();
-
-                                process = executeCommand(channel, statusBarItem, command);
-                            } else if (option === 'Terminate') {
-                                kill( process.pid );
-                                channel.appendLine('Terminated');
-                                process = undefined;
-                                statusBarItem.text = command.text;
-                            } else if (option === 'Execute') {
-                                process = undefined;
-                                process = executeCommand(channel, statusBarItem, command);
-                                statusBarItem.text = inProgress;
-                                channel.show();
-                            }
-                            statusBarItems[commandId].process = process;
-                        });
-                } else {
-                    process = executeCommand(channel, statusBarItem, command);
-                    statusBarItem.text = inProgress;
-                    channel.show();
-                    statusBarItems[commandId].process = process;
-                }
+    try {
+        // THIS IS GOING TO BE DRAMATICALLY REFACTORED
+        const settingsPath = `${vscode.workspace.rootPath}/.vscode/commandbar.json`;
+        const channel = vscode.window.createOutputChannel('commandbar');
+    
+        if(fs.existsSync(settingsPath)) {
+            channel.appendLine('Commandbar Loaded settings');
+            const settings = JSON.parse(fs.readFileSync(settingsPath));
+            settings.commands.forEach( (command) => {
+                const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+                const commandId = `extension.commandbar.${command.id}`;
+                const inProgress = `${command.text} (in progress)`;
+                statusBarItem.text = command.text;
+                statusBarItem.tooltip = command.tooltip;
+                statusBarItem.color = command.color;
+                statusBarItem.command = commandId;
+                statusBarItem.show();
+                statusBarItems[commandId] = statusBarItem;
+                
+                const disposableCommand = vscode.commands.registerCommand(commandId, () => {
+                    let process = statusBarItems[commandId].process;
+                    if(process) {
+                        vscode.window.showQuickPick(['Terminate and Execute', 'Terminate', 'Execute', 'Cancel'])
+                            .then((option) => {
+                                if(option === 'Terminate and Execute') {
+                                    kill(process.pid, 'SIGTERM', () => statusBarItem.text = inProgress);
+                                    channel.appendLine('Terminated!');
+                                    channel.show();
+                                    channel.appendLine('Execute...');
+                                    process = executeCommand(channel, statusBarItem, command);
+                                } else if (option === 'Terminate') {
+                                    kill( process.pid );
+                                    channel.appendLine('Terminated!');
+                                    process = undefined;
+                                    statusBarItem.text = command.text;
+                                } else if (option === 'Execute') {
+                                    channel.appendLine('Execute...');
+                                    process = undefined;
+                                    process = executeCommand(channel, statusBarItem, command);
+                                    statusBarItem.text = inProgress;
+                                    channel.show();
+                                }
+                                statusBarItems[commandId].process = process;
+                            });
+                    } else {
+                        channel.appendLine('Execute...');
+                        process = executeCommand(channel, statusBarItem, command);
+                        statusBarItem.text = inProgress;
+                        channel.show();
+                        statusBarItems[commandId].process = process;
+                    }
+                });
+                context.subscriptions.push(disposableCommand);
             });
-            context.subscriptions.push(disposableCommand);
-        });
+        }
+    } catch(err) {
+        console.log(err);
     }
 
 }
