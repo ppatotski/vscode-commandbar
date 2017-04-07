@@ -1,6 +1,7 @@
 # vscode-commandbar
 
 [![Version](http://vsmarketplacebadge.apphb.com/version/gsppvo.vscode-commandbar.svg)](https://marketplace.visualstudio.com/items?itemName=gsppvo.vscode-commandbar)
+[![Release](https://github.com/ppatotski/vscode-commandbar/releases)](https://img.shields.io/github/release/vscode-commandbar/vscode-commandbar.svg)
 
 A Command bar within VSCode Status bar.
 
@@ -11,16 +12,17 @@ A Command bar within VSCode Status bar.
 
 Example of config file (.vscode/commandbar.json)
 
-```javascript
+```json
 {
 	"commands": [
 		{
 			"id": "serve",
 			"text": "Serve",
-			"tooltip": "Serve My UI",
+			"tooltip": "Serve UI",
 			"color": "yellow",
 			"command": "npm run serve"
 		}
 	]
 }
 ```
+
