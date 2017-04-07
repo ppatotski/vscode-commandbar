@@ -2,7 +2,7 @@
 
 [![Version](http://vsmarketplacebadge.apphb.com/version/gsppvo.vscode-commandbar.svg)](https://marketplace.visualstudio.com/items?itemName=gsppvo.vscode-commandbar)
 
-[![Release](https://img.shields.io/github/release/vscode-commandbar/vscode-commandbar.svg)](https://github.com/ppatotski/vscode-commandbar/releases)
+[![GitHub release](https://img.shields.io/github/release/ppatotski/vscode-commandbar.svg)](https://github.com/ppatotski/vscode-commandbar/releases)
 
 A Command bar within VSCode Status bar.
 
