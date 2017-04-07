@@ -4,7 +4,7 @@
 const vscode = require('vscode');
 const childProcess = require( 'child_process' ); // execute command line
 const kill = require( 'tree-kill' ); // kill process tree
-const fs = require('fs');
+const fs = require('fs'); // File system
 
 const statusBarItems = {};
 
@@ -14,7 +14,7 @@ function activate(context) {
     try {
         // THIS IS GOING TO BE DRAMATICALLY REFACTORED
         const settingsPath = `${vscode.workspace.rootPath}/.vscode/commandbar.json`;
-        const channel = vscode.window.createOutputChannel('commandbar');
+        const channel = vscode.window.createOutputChannel('Commandbar');
     
         if(fs.existsSync(settingsPath)) {
             const settings = JSON.parse(fs.readFileSync(settingsPath));
