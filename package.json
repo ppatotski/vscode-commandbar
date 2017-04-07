@@ -2,7 +2,7 @@
     "name": "vscode-commandbar",
     "displayName": "vscode-commandbar",
     "description": "Visual Studio Code Command bar",
-    "version": "0.1.5",
+    "version": "0.2.0",
     "publisher": "gsppvo",
     "license": "MIT",
     "homepage": "https://github.com/ppatotski/vscode-commandbar",
@@ -31,8 +31,8 @@
         "command",
         "statusbar",
         "toolbar",
-        "extension",
-        "plugin"
+        "button",
+        "run"
     ],
     "activationEvents": [
         "*"
