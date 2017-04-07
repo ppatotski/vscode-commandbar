@@ -17,7 +17,6 @@ function activate(context) {
         const channel = vscode.window.createOutputChannel('commandbar');
     
         if(fs.existsSync(settingsPath)) {
-            channel.appendLine('Commandbar Loaded settings');
             const settings = JSON.parse(fs.readFileSync(settingsPath));
             settings.commands.forEach( (command) => {
                 const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -32,6 +31,16 @@ function activate(context) {
                 
                 const disposableCommand = vscode.commands.registerCommand(commandId, () => {
                     let process = statusBarItems[commandId].process;
+
+                    const executeCommand = function executeCommand(channel, statusBarItem, command) {
+                        process = childProcess.exec(command.command, { cwd: vscode.workspace.rootPath }, () => {
+                            statusBarItem.text = command.text;
+                        });
+                        process.stdout.on('data', data => channel.append(data));
+                        process.stderr.on('data', data => channel.append(data));
+                        return process
+                    }
+
                     if(process) {
                         vscode.window.showQuickPick(['Terminate and Execute', 'Terminate', 'Execute', 'Cancel'])
                             .then((option) => {
@@ -39,7 +48,7 @@ function activate(context) {
                                     kill(process.pid, 'SIGTERM', () => statusBarItem.text = inProgress);
                                     channel.appendLine('Terminated!');
                                     channel.show();
-                                    channel.appendLine('Execute...');
+                                    channel.appendLine(`Execute '${command.id}' command...`);
                                     process = executeCommand(channel, statusBarItem, command);
                                 } else if (option === 'Terminate') {
                                     kill( process.pid );
@@ -47,7 +56,7 @@ function activate(context) {
                                     process = undefined;
                                     statusBarItem.text = command.text;
                                 } else if (option === 'Execute') {
-                                    channel.appendLine('Execute...');
+                                    channel.appendLine(`Execute '${command.id}' command...`);
                                     process = undefined;
                                     process = executeCommand(channel, statusBarItem, command);
                                     statusBarItem.text = inProgress;
@@ -56,13 +65,14 @@ function activate(context) {
                                 statusBarItems[commandId].process = process;
                             });
                     } else {
-                        channel.appendLine('Execute...');
+                        channel.appendLine(`Execute '${command.id}' command...`);
                         process = executeCommand(channel, statusBarItem, command);
                         statusBarItem.text = inProgress;
                         channel.show();
                         statusBarItems[commandId].process = process;
                     }
                 });
+                context.subscriptions.push(statusBarItem);
                 context.subscriptions.push(disposableCommand);
             });
         }
@@ -81,12 +91,3 @@ function deactivate() {
 }
 
 exports.deactivate = deactivate;
-
-function executeCommand(channel, statusBarItem, command) {
-    process = childProcess.exec(command.command, { cwd: vscode.workspace.rootPath }, () => {
-        statusBarItem.text = command.text;
-    });
-    process.stdout.on('data', data => channel.append(data));
-    process.stderr.on('data', data => channel.append(data));
-    return process
-}
