@@ -2,7 +2,7 @@
     "name": "vscode-commandbar",
     "displayName": "vscode-commandbar",
     "description": "Visual Studio Code Commandbar",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "publisher": "gsppvo",
     "license": "MIT",
     "engines": {
