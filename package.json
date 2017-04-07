@@ -2,7 +2,7 @@
     "name": "vscode-commandbar",
     "displayName": "vscode-commandbar",
     "description": "Visual Studio Code Command bar",
-    "version": "0.0.6",
+    "version": "0.0.9",
     "publisher": "gsppvo",
     "license": "MIT",
     "homepage": "https://github.com/ppatotski/vscode-commandbar",
@@ -25,7 +25,6 @@
         "url": "https://github.com/ppatotski/vscode-commandbar"
     },
     "categories": [
-        "Extension Packs",
         "Other"
     ],
     "keywords": [
@@ -39,7 +38,7 @@
         "*"
     ],
     "galleryBanner": {
-        "color": "#000000",
+        "color": "green",
         "theme": "light"
     },
     "main": "./extension",
