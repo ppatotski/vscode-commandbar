@@ -1,15 +1,18 @@
 # vscode-commandbar
 
-Coming soon.
+A Command bar within VSCode Status bar.
 
-## Customization (./.vscode/commandbar.json)
+## Configuration
+
+Example of config file (.vscode/commandbar.json)
 
 ```javascript
 {
 	"commands": [
 		{
-			"id": "build",
-			"text": "Build",
+			"id": "serve",
+			"text": "Serve",
+			"tooltip": "Serve My UI",
 			"color": "yellow",
 			"command": "npm run serve"
 		}
