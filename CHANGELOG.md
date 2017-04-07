@@ -1,5 +1,4 @@
 # Change Log
-All notable changes to the "vscode-commandbar" extension will be documented in this file.
 
-## [Unreleased]
-- Initial release
+## 0.0.6 (April 07, 2017)
+- Enhancement: Marketplace presentation
