@@ -11,7 +11,7 @@ A Command bar within VSCode Status bar.
 
 ## Configuration
 
-Example of config file (.vscode/commandbar.json)
+Example of config file (`.vscode/commandbar.json`)
 
 ```json
 {
@@ -21,7 +21,10 @@ Example of config file (.vscode/commandbar.json)
 			"text": "Serve",
 			"tooltip": "Serve UI",
 			"color": "yellow",
-			"command": "npm run serve"
+			"command": "npm run serve",
+			"alignment": "left",
+			"skipTerminateQuickPick": false,
+			"priority": 0
 		}
 	]
 }
