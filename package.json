@@ -2,7 +2,7 @@
     "name": "vscode-commandbar",
     "displayName": "vscode-commandbar",
     "description": "Visual Studio Code Command bar",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "publisher": "gsppvo",
     "license": "MIT",
     "homepage": "https://github.com/ppatotski/vscode-commandbar",
