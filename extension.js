@@ -5,15 +5,68 @@ const kill = require( 'tree-kill' );
 const fs = require('fs');
 
 const statusBarItems = {};
+const exampleJson = `{
+	"commands": [
+		{
+			"id": "serve",
+			"text": "Serve",
+			"tooltip": "Serve UI",
+			"color": "yellow",
+			"command": "npm run serve",
+			"alignment": "left",
+			"skipTerminateQuickPick": false,
+			"priority": 0
+		}
+	]
+}`;
 
 function activate(context) {
     try {
+        const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
+            const settingsDir = `${vscode.workspace.rootPath}\\.vscode`;
+            const settingsPath = `${settingsDir}\\commandbar.json`;
+
+            if(vscode.workspace.rootPath) {
+                fs.stat(settingsPath, (err) => {
+                    if(!err) {
+                        vscode.workspace.openTextDocument(settingsPath).then(doc => {
+                            vscode.window.showTextDocument(doc);
+                        });
+                    } else {
+                        const options = ['Create from Example', 'Create from package.json', 'Cancel'];
+
+                        vscode.window.showQuickPick(options)
+                            .then((option) => {
+                                if(option === options[0]) {
+                                    vscode.workspace.openTextDocument(vscode.Uri.parse(`untitled:${settingsPath}`)).then(doc => {
+                                        vscode.window.showTextDocument(doc).then((editor) => {
+                                                editor.edit(edit => {
+                                                    edit.insert(new vscode.Position(0, 0), exampleJson);
+                                                });
+                                            });
+                                    });
+                                } else if(option === options[1]) {
+                                    vscode.workspace.openTextDocument(vscode.Uri.parse(`untitled:${settingsPath}`)).then(doc => {
+                                        vscode.window.showTextDocument(doc).then((editor) => {
+                                                editor.edit(edit => {
+                                                    edit.insert(new vscode.Position(0, 0), exampleJson);
+                                                });
+                                            });
+                                    });
+                                } else if(option === options[2]) {
+                                }
+                            });
+                    }
+                });         
+            }   
+        });
+
         if(vscode.workspace.rootPath) {
             const settingsPath = `${vscode.workspace.rootPath}/.vscode/commandbar.json`;
             const channel = vscode.window.createOutputChannel('Commandbar');
         
-            fs.exists(settingsPath, (exist) => {
-                if(exist) {
+            fs.stat(settingsPath, (err) => {
+                if(!err) {
                     fs.readFile(settingsPath, (err, buffer) => {
                         if(err) {
                             console.error(err);
@@ -22,7 +75,7 @@ function activate(context) {
                             settings.commands.forEach( (command) => {
                                 const alignment = command.alignment === 'right'? vscode.StatusBarAlignment.Right: vscode.StatusBarAlignment.Left;
                                 const statusBarItem = vscode.window.createStatusBarItem(alignment, command.priority);
-                                const commandId = `extension.commandbar.${command.id}`;
+                                const commandId = `extension.commandbar.command_${command.id}`;
                                 const inProgress = `${command.text} (in progress)`;
 
                                 statusBarItem.text = command.text;
@@ -32,7 +85,7 @@ function activate(context) {
                                 statusBarItem.show();
                                 statusBarItems[commandId] = statusBarItem;
                                 
-                                const disposableCommand = vscode.commands.registerCommand(commandId, () => {
+                                const vsCommand = vscode.commands.registerCommand(commandId, () => {
                                     let process = statusBarItems[commandId].process;
 
                                     const executeCommand = function executeCommand() {
@@ -85,7 +138,7 @@ function activate(context) {
                                     }
                                 });
                                 context.subscriptions.push(statusBarItem);
-                                context.subscriptions.push(disposableCommand);
+                                context.subscriptions.push(vsCommand);
                             });
                         }
                     });
@@ -95,6 +148,8 @@ function activate(context) {
             });
             
         }
+
+        context.subscriptions.push(vsSettingsCommand);
     } catch(err) {
         console.error(err);
     }
