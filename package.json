@@ -4,8 +4,8 @@
     "description": "Visual Studio Code Command bar",
     "version": "0.2.1",
     "publisher": "gsppvo",
-    "license": "MIT",
-    "homepage": "https://github.com/ppatotski/vscode-commandbar",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "homepage": "https://github.com/ppatotski/vscode-commandbar/blob/master/README.md",
     "icon": "logo.svg",
     "engines": {
         "vscode": "^1.10.0"
@@ -22,7 +22,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/ppatotski/vscode-commandbar"
+        "url": "https://github.com/ppatotski/vscode-commandbar.git"
     },
     "categories": [
         "Other"
@@ -32,31 +32,52 @@
         "statusbar",
         "toolbar",
         "button",
-        "run"
+        "action"
     ],
     "activationEvents": [
         "*"
     ],
     "galleryBanner": {
-        "color": "#d2d2e6",
+        "color": "#d1dcf0",
         "theme": "light"
     },
     "main": "./extension",
     "contributes": {
-        "commands": []
+        "commands": [],
+        "jsonValidation": [
+            {
+                "fileMatch": "/.vscode/commandbar.json",
+                "url": "./vscode-commandbar-schema.json"
+            }
+        ]
     },
+    "badges": [
+        {
+            "url": "http://vsmarketplacebadge.apphb.com/version/gsppvo.vscode-commandbar.svg",
+            "href": "https://marketplace.visualstudio.com/items?itemName=gsppvo.vscode-commandbar",
+            "description": "VSCode Extension Release"
+        },
+        {
+            "url": "https://img.shields.io/github/release/ppatotski/vscode-commandbar.svg",
+            "href": "https://github.com/ppatotski/vscode-commandbar/releases",
+            "description": "Github Release"
+        },
+        {
+            "url": "https://david-dm.org/ppatotski/vscode-commandbar.svg",
+            "href": "https://david-dm.org/ppatotski/vscode-commandbar",
+            "description": "Dependency Status"
+        }
+    ],
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.0.3",
         "vscode": "^1.0.0",
         "mocha": "^2.3.3",
         "eslint": "^3.6.0",
         "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32",
-        "tree-kill": "^1.1.0"
+        "@types/mocha": "^2.2.32"
     },
     "dependencies": {
         "tree-kill": "^1.1.0"

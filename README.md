@@ -11,7 +11,7 @@ A Command bar within VSCode Status bar.
 
 ## Configuration
 
-Example of config file (`.vscode/commandbar.json`)
+Config file example (`.vscode/commandbar.json`)
 
 ```json
 {

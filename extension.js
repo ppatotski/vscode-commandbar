@@ -20,7 +20,8 @@ function activate(context) {
                         } else {
                             const settings = JSON.parse(buffer);
                             settings.commands.forEach( (command) => {
-                                const statusBarItem = vscode.window.createStatusBarItem(command.alignment === 'right'? vscode.StatusBarAlignment.Right: vscode.StatusBarAlignment.Left, command.priority);
+                                const alignment = command.alignment === 'right'? vscode.StatusBarAlignment.Right: vscode.StatusBarAlignment.Left;
+                                const statusBarItem = vscode.window.createStatusBarItem(alignment, command.priority);
                                 const commandId = `extension.commandbar.${command.id}`;
                                 const inProgress = `${command.text} (in progress)`;
 
@@ -40,7 +41,7 @@ function activate(context) {
                                         });
                                         process.stdout.on('data', data => channel.append(data));
                                         process.stderr.on('data', data => channel.append(data));
-                                        return process
+                                        return process;
                                     }
 
                                     if(process) {
@@ -55,12 +56,12 @@ function activate(context) {
                                                         channel.show();
                                                         channel.appendLine(`Execute '${command.id}' command...`);
                                                         process = executeCommand();
-                                                    } else if (option === options[1]) {
+                                                    } else if(option === options[1]) {
                                                         kill( process.pid );
                                                         channel.appendLine('Terminated!');
                                                         process = undefined;
                                                         statusBarItem.text = command.text;
-                                                    } else if (option === options[2]) {
+                                                    } else if(option === options[2]) {
                                                         channel.appendLine(`Execute '${command.id}' command...`);
                                                         process = undefined;
                                                         process = executeCommand();
@@ -70,7 +71,7 @@ function activate(context) {
                                                     statusBarItems[commandId].process = process;
                                                 });
                                         } else {
-                                            kill( process.pid );
+                                            kill(process.pid);
                                             channel.appendLine('Terminated!');
                                             process = undefined;
                                             statusBarItem.text = command.text;
@@ -98,11 +99,14 @@ function activate(context) {
         console.error(err);
     }
 }
+
 exports.activate = activate;
 
 function deactivate() {
-    Object.keys(statusBarItems).forEach( (key) => {
-        if(statusBarItems[key].process) kill(statusBarItems[key].process.pid);
+    Object.keys(statusBarItems).forEach((key) => {
+        if(statusBarItems[key].process) {
+            kill(statusBarItems[key].process.pid);
+        }
     });
 }
 
