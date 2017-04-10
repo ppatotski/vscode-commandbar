@@ -9,7 +9,7 @@ A Command bar within VSCode Status bar.
 ## Features
 
 * Long-running command termination
-* Configurable Status bar item options (including text, tooltip, alignment, color, priority)
+* Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
 * Create a new settings file functionality
 
 [![Demo](demo.gif)](demo.gif)
@@ -35,7 +35,7 @@ A Command bar within VSCode Status bar.
 }
 ```
 
-### Configuration file schema
+### Configuration file schema (documentation)
 ```json
 {
   "id": {
@@ -48,7 +48,7 @@ A Command bar within VSCode Status bar.
   },
   "command": {
     "type": "string",
-    "description": "Command e.g npm run serve."
+    "description": "Command e.g 'npm run serve'."
   },
   "alignment": {
     "type": "string",

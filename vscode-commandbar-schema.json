@@ -19,7 +19,7 @@
           },
           "command": {
             "type": "string",
-            "description": "Command e.g npm run serve."
+            "description": "Command e.g 'npm run serve'."
           },
           "alignment": {
             "type": "string",
