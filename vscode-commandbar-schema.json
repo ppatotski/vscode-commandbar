@@ -11,7 +11,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Command identifier."
+            "description": "Command unique identifier."
           },
           "text": {
             "type": "string",

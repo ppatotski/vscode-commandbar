@@ -2,10 +2,15 @@
 
 A Command bar within VSCode Status bar.
 
+## Get Started
+
+[![Get Started](getstarted.gif)](getstarted.gif)
+
 ## Features
 
-* Support long-running command termination
-* Support all Status bar item options (including tooltip, alignment, color, priority)
+* Long-running command termination
+* Configurable Status bar item options (including text, tooltip, alignment, color, priority)
+* Create a new settings file functionality
 
 [![Demo](demo.gif)](demo.gif)
 
@@ -30,59 +35,47 @@ A Command bar within VSCode Status bar.
 }
 ```
 
-### Configuration file Schema
+### Configuration file schema
 ```json
 {
-  "type": "object",
-  "properties": {
-    "commands": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [ "id", "text", "command" ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Command identifier."
-          },
-          "text": {
-            "type": "string",
-            "description": "Displayed text of status bar item."
-          },
-          "command": {
-            "type": "string",
-            "description": "Command e.g npm run serve."
-          },
-          "alignment": {
-            "type": "string",
-            "description": "Alignment of status bar item.",
-            "enum": [ "left", "right" ],
-            "default": "left"
-          },
-          "tooltip": {
-            "type": "string",
-            "description": "Tooltip of status bar item."
-          },
-          "color": {
-            "type": "string",
-            "description": "Text color of status bar item."
-          },
-          "priority": {
-            "type": "number",
-            "description": "Priority (placement) of status bar item."
-          },
-          "skipTerminateQuickPick": {
-            "type": "boolean",
-            "description": "Do not show Terminate QuickPick.",
-            "default": false
-          }
-        }
-      }
-    }
+  "id": {
+    "type": "string",
+    "description": "Command unique identifier."
+  },
+  "text": {
+    "type": "string",
+    "description": "Displayed text of status bar item."
+  },
+  "command": {
+    "type": "string",
+    "description": "Command e.g npm run serve."
+  },
+  "alignment": {
+    "type": "string",
+    "description": "Alignment of status bar item.",
+    "enum": [ "left", "right" ],
+    "default": "left"
+  },
+  "tooltip": {
+    "type": "string",
+    "description": "Tooltip of status bar item."
+  },
+  "color": {
+    "type": "string",
+    "description": "Text color of status bar item."
+  },
+  "priority": {
+    "type": "number",
+    "description": "Priority (placement) of status bar item."
+  },
+  "skipTerminateQuickPick": {
+    "type": "boolean",
+    "description": "Do not show Terminate QuickPick.",
+    "default": false
   }
 }
 ```
 
 ## License
 
-MIT
+[MIT](LICENSE.md)

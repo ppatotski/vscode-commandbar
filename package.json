@@ -2,7 +2,7 @@
     "name": "vscode-commandbar",
     "displayName": "vscode-commandbar",
     "description": "Visual Studio Code Command bar",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "publisher": "gsppvo",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://github.com/ppatotski/vscode-commandbar/blob/master/README.md",
