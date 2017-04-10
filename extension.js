@@ -5,6 +5,7 @@ const kill = require( 'tree-kill' );
 const fs = require('fs');
 
 const statusBarItems = {};
+const createNewMessage = 'Settings file had been created. Update wont take effect until restart vscode';
 const exampleJson = `{
 	"commands": [
 		{
@@ -33,7 +34,7 @@ function activate(context) {
                             vscode.window.showTextDocument(doc);
                         });
                     } else {
-                        const options = ['Create from Example', 'Create from package.json', 'Cancel'];
+                        const options = ['Create New', 'Cancel'];
 
                         vscode.window.showQuickPick(options)
                             .then((option) => {
@@ -42,18 +43,10 @@ function activate(context) {
                                         vscode.window.showTextDocument(doc).then((editor) => {
                                                 editor.edit(edit => {
                                                     edit.insert(new vscode.Position(0, 0), exampleJson);
+                                                    vscode.window.showInformationMessage(createNewMessage);
                                                 });
                                             });
                                     });
-                                } else if(option === options[1]) {
-                                    vscode.workspace.openTextDocument(vscode.Uri.parse(`untitled:${settingsPath}`)).then(doc => {
-                                        vscode.window.showTextDocument(doc).then((editor) => {
-                                                editor.edit(edit => {
-                                                    edit.insert(new vscode.Position(0, 0), exampleJson);
-                                                });
-                                            });
-                                    });
-                                } else if(option === options[2]) {
                                 }
                             });
                     }

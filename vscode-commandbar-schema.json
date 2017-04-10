@@ -1,8 +1,10 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
     "commands": {
       "type": "array",
+      "description": "An array of commands",
       "items": {
         "type": "object",
         "required": [ "id", "text", "command" ],
