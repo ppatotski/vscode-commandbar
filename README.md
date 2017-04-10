@@ -1,18 +1,23 @@
 # Visual Studio Code Command bar
 
-[![Version](http://vsmarketplacebadge.apphb.com/version/gsppvo.vscode-commandbar.svg)](https://marketplace.visualstudio.com/items?itemName=gsppvo.vscode-commandbar)
-
-[![GitHub release](https://img.shields.io/github/release/ppatotski/vscode-commandbar.svg)](https://github.com/ppatotski/vscode-commandbar/releases)
-
 A Command bar within VSCode Status bar.
+
+## Get Started
+
+[![Get Started](getstarted.gif)](getstarted.gif)
+
+## Features
+
+* Long-running command termination
+* Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
+* Create a new settings file functionality
 
 [![Demo](demo.gif)](demo.gif)
 
 
 ## Configuration
 
-Example of config file (`.vscode/commandbar.json`)
-
+### Config file example (`./.vscode/commandbar.json`)
 ```json
 {
 	"commands": [
@@ -30,6 +35,47 @@ Example of config file (`.vscode/commandbar.json`)
 }
 ```
 
+### Configuration file schema (documentation)
+```json
+{
+  "id": {
+    "type": "string",
+    "description": "Command unique identifier."
+  },
+  "text": {
+    "type": "string",
+    "description": "Displayed text of status bar item."
+  },
+  "command": {
+    "type": "string",
+    "description": "Command e.g 'npm run serve'."
+  },
+  "alignment": {
+    "type": "string",
+    "description": "Alignment of status bar item.",
+    "enum": [ "left", "right" ],
+    "default": "left"
+  },
+  "tooltip": {
+    "type": "string",
+    "description": "Tooltip of status bar item."
+  },
+  "color": {
+    "type": "string",
+    "description": "Text color of status bar item."
+  },
+  "priority": {
+    "type": "number",
+    "description": "Priority (placement) of status bar item."
+  },
+  "skipTerminateQuickPick": {
+    "type": "boolean",
+    "description": "Do not show Terminate QuickPick.",
+    "default": false
+  }
+}
+```
+
 ## License
 
-MIT
+[MIT](LICENSE.md)
