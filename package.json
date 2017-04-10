@@ -43,7 +43,12 @@
     },
     "main": "./extension",
     "contributes": {
-        "commands": [],
+        "commands": [
+            {
+                "command": "extension.commandbar.settings",
+                "title": "Commandbar Settings"
+            }
+        ],
         "jsonValidation": [
             {
                 "fileMatch": "/.vscode/commandbar.json",
