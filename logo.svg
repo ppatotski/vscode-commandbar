@@ -1,3 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" viewBox="0 0 600 600" width="600" height="600"><defs><path d="M590 300C590 460.06 460.06 590 300 590C139.94 590 10 460.06 10 300C10 139.94 139.94 10 300 10C460.06 10 590 139.94 590 300Z" id="dZUSLzClz"></path><path d="M590 510C590 554.15 554.15 590 510 590C465.85 590 430 554.15 430 510C430 465.85 465.85 430 510 430C554.15 430 590 465.85 590 510Z" id="b1iL1R7s57"></path></defs><g><g><g><use xlink:href="#dZUSLzClz" opacity="1" fill="#000000" fill-opacity="1"></use><g><use xlink:href="#dZUSLzClz" opacity="1" fill-opacity="0" stroke="#0a88c9" stroke-width="20" stroke-opacity="1"></use></g></g><g><use xlink:href="#b1iL1R7s57" opacity="1" fill="#11233c" fill-opacity="1"></use><g><use xlink:href="#b1iL1R7s57" opacity="1" fill-opacity="0" stroke="#0a88c9" stroke-width="10" stroke-opacity="1"></use></g></g></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+    <ellipse rx="10" ry="48" cx="54" cy="54" stroke="gray" stroke-width="0" fill="#73C097" transform="rotate(-4 16 132)"/>
+    <ellipse rx="12" ry="48" cx="54" cy="54" stroke="#73C097" stroke-width="0" fill="#6E9AB1" transform="rotate(10 16 132)" />
+    <ellipse rx="5" ry="5" cx="42" cy="102" stroke="#262C65" stroke-width="0" fill="#4B5291" transform="rotate(10 16 132)" />
+</svg>

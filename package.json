@@ -46,7 +46,12 @@
         "commands": [
             {
                 "command": "extension.commandbar.settings",
-                "title": "Commandbar Settings"
+                "title": "Settings",
+                "category": "Commandbar",
+                "icon": {
+                    "dark": "./logo.svg",
+                    "light": "./logo.svg"
+                }
             }
         ],
         "jsonValidation": [
