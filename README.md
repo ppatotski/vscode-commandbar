@@ -10,7 +10,7 @@ A Command bar within VSCode Status bar.
 
 * Long-running command termination
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
-* Create a new settings file functionality
+* Create default settings file (`Ctrl+Shift+P` type `CommandBar: Settings`)
 
 [![Demo](demo.gif)](demo.gif)
 
@@ -23,7 +23,7 @@ A Command bar within VSCode Status bar.
 	"commands": [
 		{
 			"id": "serve",
-			"text": "Serve",
+			"text": "❊ Serve",
 			"tooltip": "Serve UI",
 			"color": "yellow",
 			"command": "npm run serve",

@@ -2,10 +2,10 @@
 	"name": "vscode-commandbar",
 	"displayName": "vscode-commandbar",
 	"description": "Visual Studio Code Command bar",
-	"version": "0.2.2",
+	"version": "0.2.4",
 	"publisher": "gsppvo",
 	"license": "SEE LICENSE IN LICENSE.md",
-	"homepage": "https://github.com/ppatotski/vscode-commandbar/blob/master/README.md",
+	"homepage": "https://github.com/ppatotski/vscode-commandbar",
 	"icon": "logo.svg",
 	"engines": {
 		"vscode": "^1.10.0"

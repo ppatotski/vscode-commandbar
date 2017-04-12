@@ -10,7 +10,7 @@ const exampleJson = `{
 	"commands": [
 		{
 			"id": "serve",
-			"text": "Serve",
+			"text": "❊ Serve",
 			"tooltip": "Serve UI",
 			"color": "yellow",
 			"command": "npm run serve",
