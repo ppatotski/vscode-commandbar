@@ -79,55 +79,56 @@ function activate(context) {
 								statusBarItems[commandId] = statusBarItem;
 
 								const vsCommand = vscode.commands.registerCommand(commandId, () => {
-									let process = statusBarItems[commandId].process;
-
 									const executeCommand = function executeCommand() {
-										process = childProcess.exec(command.command, { cwd: vscode.workspace.rootPath }, () => {
+										const process = childProcess.exec(command.command, { cwd: vscode.workspace.rootPath }, () => {
 											statusBarItem.text = command.text;
+											statusBarItem.process = undefined;
 										});
 										process.stdout.on('data', data => channel.append(data));
 										process.stderr.on('data', data => channel.append(data));
-										return process;
+										statusBarItem.process = process;
 									}
 
-									if(process) {
+									if(statusBarItem.process) {
 										if(!command.skipTerminateQuickPick) {
 											const options = ['Terminate and Execute', 'Terminate', 'Execute', 'Cancel'];
 
 											vscode.window.showQuickPick(options)
 												.then((option) => {
 													if(option === options[0]) {
-														kill(process.pid, 'SIGTERM', () => statusBarItem.text = inProgress);
-														channel.appendLine('Terminated!');
-														channel.show();
-														channel.appendLine(`Execute '${command.id}' command...`);
-														process = executeCommand();
+														kill(statusBarItem.process.pid, 'SIGTERM', () => {
+															statusBarItem.text = inProgress;
+															channel.appendLine('Terminated!');
+															channel.show();
+															channel.appendLine(`Execute '${command.id}' command...`);
+															executeCommand();
+														});
 													} else if(option === options[1]) {
-														kill( process.pid );
-														channel.appendLine('Terminated!');
-														process = undefined;
-														statusBarItem.text = command.text;
+														kill(statusBarItem.process.pid, 'SIGTERM', () => {
+															channel.appendLine('Terminated!');
+															statusBarItem.process = undefined;
+															statusBarItem.text = command.text;
+														});
 													} else if(option === options[2]) {
 														channel.appendLine(`Execute '${command.id}' command...`);
-														process = undefined;
-														process = executeCommand();
+														statusBarItem.process = undefined;
+														executeCommand();
 														statusBarItem.text = inProgress;
 														channel.show();
 													}
-													statusBarItems[commandId].process = process;
 												});
 										} else {
-											kill(process.pid);
-											channel.appendLine('Terminated!');
-											process = undefined;
-											statusBarItem.text = command.text;
+											kill(statusBarItem.process.pid, 'SIGTERM', () => {
+												channel.appendLine('Terminated!');
+												statusBarItem.process = undefined;
+												statusBarItem.text = command.text;
+											});
 										}
 									} else {
 										channel.appendLine(`Execute '${command.id}' command...`);
-										process = executeCommand();
+										executeCommand();
 										statusBarItem.text = inProgress;
 										channel.show();
-										statusBarItems[commandId].process = process;
 									}
 								});
 								context.subscriptions.push(statusBarItem);
