@@ -19,7 +19,7 @@
 					},
 					"command": {
 						"type": "string",
-						"description": "Command e.g 'npm run serve'."
+						"description": "Command content according to commandType:\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes vscode registered command."
 					},
 					"alignment": {
 						"type": "string",
@@ -43,6 +43,16 @@
 						"type": "boolean",
 						"description": "Do not show Terminate QuickPick.",
 						"default": false
+					},
+					"commandType": {
+						"type": "string",
+						"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes vscode registered command.",
+						"enum": [
+							"exec",
+							"script",
+							"palette"
+						],
+						"default": "exec"
 					}
 				}
 			}

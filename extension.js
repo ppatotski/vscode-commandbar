@@ -77,63 +77,84 @@ function activate(context) {
 								statusBarItem.command = commandId;
 								statusBarItem.show();
 								statusBarItems[commandId] = statusBarItem;
+								context.subscriptions.push(statusBarItem);
 
-								const vsCommand = vscode.commands.registerCommand(commandId, () => {
-									const executeCommand = function executeCommand() {
-										const process = childProcess.exec(command.command, { cwd: vscode.workspace.rootPath }, () => {
-											statusBarItem.text = command.text;
-											statusBarItem.process = undefined;
-										});
-										process.stdout.on('data', data => channel.append(data));
-										process.stderr.on('data', data => channel.append(data));
-										statusBarItem.process = process;
-									}
+								if(command.commandType === 'palette') {
+									statusBarItem.command = command.command;
+								} else {
+									const vsCommand = vscode.commands.registerCommand(commandId, () => {
+										const executeCommand = function executeCommand() {
+											const exec = function exec(commandContent) {
+												const process = childProcess.exec(commandContent, { cwd: vscode.workspace.rootPath }, () => {
+													statusBarItem.text = command.text;
+													statusBarItem.process = undefined;
+												});
+												process.stdout.on('data', data => channel.append(data));
+												process.stderr.on('data', data => channel.append(data));
+												statusBarItem.process = process;
+											}
 
-									if(statusBarItem.process) {
-										if(!command.skipTerminateQuickPick) {
-											const options = ['Terminate and Execute', 'Terminate', 'Execute', 'Cancel'];
-
-											vscode.window.showQuickPick(options)
-												.then((option) => {
-													if(option === options[0]) {
-														kill(statusBarItem.process.pid, 'SIGTERM', () => {
-															statusBarItem.text = inProgress;
-															channel.appendLine('Terminated!');
-															channel.show();
-															channel.appendLine(`Execute '${command.id}' command...`);
-															executeCommand();
-														});
-													} else if(option === options[1]) {
-														kill(statusBarItem.process.pid, 'SIGTERM', () => {
-															channel.appendLine('Terminated!');
-															statusBarItem.process = undefined;
-															statusBarItem.text = command.text;
-														});
-													} else if(option === options[2]) {
-														channel.appendLine(`Execute '${command.id}' command...`);
-														statusBarItem.process = undefined;
-														executeCommand();
-														statusBarItem.text = inProgress;
-														channel.show();
+											if(command.commandType === 'script') {
+												fs.readFile(`${vscode.workspace.rootPath}/package.json`, (err, buffer) => {
+													if(err) {
+														console.error(err);
+													} else {
+														const packageJson = JSON.parse(buffer);
+														exec(packageJson.scripts[command.command]);
 													}
 												});
-										} else {
-											kill(statusBarItem.process.pid, 'SIGTERM', () => {
-												channel.appendLine('Terminated!');
-												statusBarItem.process = undefined;
-												statusBarItem.text = command.text;
-											});
+
+											} else {
+												exec(command.command);
+											}
 										}
-									} else {
-										channel.appendLine(`Execute '${command.id}' command...`);
-										executeCommand();
-										statusBarItem.text = inProgress;
-										channel.show();
-									}
-								});
-								context.subscriptions.push(statusBarItem);
-								context.subscriptions.push(vsCommand);
+
+										if(statusBarItem.process) {
+											if(!command.skipTerminateQuickPick) {
+												const options = ['Terminate and Execute', 'Terminate', 'Execute without Terminating already running command', 'Cancel'];
+
+												vscode.window.showQuickPick(options)
+													.then((option) => {
+														if(option === options[0]) {
+															kill(statusBarItem.process.pid, 'SIGTERM', () => {
+																statusBarItem.text = inProgress;
+																channel.appendLine('Terminated!');
+																channel.show();
+																channel.appendLine(`Execute '${command.id}' command...`);
+																executeCommand();
+															});
+														} else if(option === options[1]) {
+															kill(statusBarItem.process.pid, 'SIGTERM', () => {
+																channel.appendLine('Terminated!');
+																statusBarItem.process = undefined;
+																statusBarItem.text = command.text;
+															});
+														} else if(option === options[2]) {
+															channel.appendLine(`Execute '${command.id}' command...`);
+															statusBarItem.process = undefined;
+															executeCommand();
+															statusBarItem.text = inProgress;
+															channel.show();
+														}
+													});
+											} else {
+												kill(statusBarItem.process.pid, 'SIGTERM', () => {
+													channel.appendLine('Terminated!');
+													statusBarItem.process = undefined;
+													statusBarItem.text = command.text;
+												});
+											}
+										} else {
+											channel.appendLine(`Execute '${command.id}' command...`);
+											executeCommand();
+											statusBarItem.text = inProgress;
+											channel.show();
+										}
+									});
+									context.subscriptions.push(vsCommand);
+								}
 							});
+
 						}
 					});
 

@@ -8,7 +8,12 @@ A Command bar within VSCode Status bar.
 
 ## Features
 
-* Long-running command termination
+* Execute command:
+	- Long-running command termination
+	- 3 types of commands:
+		* `exec`: executes command e.g `npm run serve` (default)
+		* `script`: executes package.json script
+		* `palette`: executes vscode registered command (vscode extension commands)
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
 * Create default settings file (`Ctrl+Shift+P` type `CommandBar: Settings`)
 
@@ -23,12 +28,31 @@ A Command bar within VSCode Status bar.
 	"commands": [
 		{
 			"id": "serve",
-			"text": "❊ Serve",
-			"tooltip": "Serve UI",
+			"text": "Serve Polymer UI",
+			"tooltip": "Serve Polymer UI",
 			"color": "yellow",
-			"command": "npm run serve",
+			"commandType": "exec",
+			"command": "polymer serve",
 			"alignment": "left",
 			"skipTerminateQuickPick": false,
+			"priority": 1
+		},
+		{
+			"id": "test",
+			"text": "Test Polymer UI",
+			"color": "lightgreen",
+			"commandType": "script",
+			"command": "test",
+			"priority": 0
+		},
+		{
+			"id": "fixall",
+			"text": "❊",
+			"tooltip": "ESLint: Fix All",
+			"color": "orange",
+			"commandType": "palette",
+			"command": "eslint.executeAutofix",
+			"alignment": "right",
 			"priority": 0
 		}
 	]
@@ -48,7 +72,7 @@ A Command bar within VSCode Status bar.
 	},
 	"command": {
 		"type": "string",
-		"description": "Command e.g 'npm run serve'."
+		"description": "Command content according to commandType:\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes vscode registered command."
 	},
 	"alignment": {
 		"type": "string",
@@ -72,9 +96,22 @@ A Command bar within VSCode Status bar.
 		"type": "boolean",
 		"description": "Do not show Terminate QuickPick.",
 		"default": false
+	},
+	"commandType": {
+		"type": "string",
+		"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes vscode registered command.",
+		"enum": [
+			"exec",
+			"script",
+			"palette"
+		],
+		"default": "exec"
 	}
 }
 ```
+## Change Log
+
+[Change Log](CHANGELOG.md)
 
 ## License
 

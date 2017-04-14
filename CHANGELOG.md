@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.5 (April 14, 2017)
+- Improvement: Different types of commands:
+	* `exec`: executes command e.g `npm run serve` (default)
+	* `script`: executes package.json script
+	* `palette`: executes vscode registered command (vscode extension commands)
+
 ## 0.2.4 (April 12, 2017)
 - Bug: Prompt for terminating of completed command execution
 - Improvement: Async termination logic flow
