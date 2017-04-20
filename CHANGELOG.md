@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.6 (April 20, 2017)
+- Improvement: deprecated command `id`
+
 ## 0.2.5 (April 14, 2017)
 - Improvement: Different types of commands:
 	* `exec`: executes command e.g `npm run serve` (default)

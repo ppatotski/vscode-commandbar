@@ -27,7 +27,6 @@ A Command bar within VSCode Status bar.
 {
 	"commands": [
 		{
-			"id": "serve",
 			"text": "Serve Polymer UI",
 			"tooltip": "Serve Polymer UI",
 			"color": "yellow",
@@ -38,22 +37,20 @@ A Command bar within VSCode Status bar.
 			"priority": 1
 		},
 		{
-			"id": "test",
 			"text": "Test Polymer UI",
 			"color": "lightgreen",
 			"commandType": "script",
 			"command": "test",
-			"priority": 0
+			"priority": 2
 		},
 		{
-			"id": "fixall",
 			"text": "❊",
 			"tooltip": "ESLint: Fix All",
 			"color": "orange",
 			"commandType": "palette",
 			"command": "eslint.executeAutofix",
 			"alignment": "right",
-			"priority": 0
+			"priority": 3
 		}
 	]
 }
@@ -62,10 +59,6 @@ A Command bar within VSCode Status bar.
 ### Configuration file schema (documentation)
 ```json
 {
-	"id": {
-		"type": "string",
-		"description": "Command unique identifier."
-	},
 	"text": {
 		"type": "string",
 		"description": "Displayed text of status bar item."
