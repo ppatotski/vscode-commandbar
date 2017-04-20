@@ -9,7 +9,6 @@ const createNewMessage = 'Settings file had been created. Update wont take effec
 const exampleJson = `{
 	"commands": [
 		{
-			"id": "serve",
 			"text": "❊ Serve",
 			"tooltip": "Serve UI",
 			"color": "yellow",
@@ -65,10 +64,12 @@ function activate(context) {
 							console.error(err);
 						} else {
 							const settings = JSON.parse(buffer);
+							let commandIndex = 0;
 							settings.commands.forEach( (command) => {
+								commandIndex += 1;
 								const alignment = command.alignment === 'right'? vscode.StatusBarAlignment.Right: vscode.StatusBarAlignment.Left;
 								const statusBarItem = vscode.window.createStatusBarItem(alignment, command.priority);
-								const commandId = `extension.commandbar.command_${command.id}`;
+								const commandId = `extension.commandbar.command_${commandIndex}`;
 								const inProgress = `${command.text} (in progress)`;
 
 								statusBarItem.text = command.text;
@@ -111,26 +112,26 @@ function activate(context) {
 
 										if(statusBarItem.process) {
 											if(!command.skipTerminateQuickPick) {
-												const options = ['Terminate and Execute', 'Terminate', 'Execute without Terminating already running command', 'Cancel'];
+												const options = ['Terminate', 'Terminate and Execute', 'Execute without terminating already running command', 'Cancel'];
 
 												vscode.window.showQuickPick(options)
 													.then((option) => {
 														if(option === options[0]) {
 															kill(statusBarItem.process.pid, 'SIGTERM', () => {
-																statusBarItem.text = inProgress;
-																channel.appendLine('Terminated!');
-																channel.show();
-																channel.appendLine(`Execute '${command.id}' command...`);
-																executeCommand();
-															});
-														} else if(option === options[1]) {
-															kill(statusBarItem.process.pid, 'SIGTERM', () => {
 																channel.appendLine('Terminated!');
 																statusBarItem.process = undefined;
 																statusBarItem.text = command.text;
 															});
+														} else if(option === options[1]) {
+															kill(statusBarItem.process.pid, 'SIGTERM', () => {
+																statusBarItem.text = inProgress;
+																channel.appendLine('Terminated!');
+																channel.show();
+																channel.appendLine(`Execute '${command.text}' command...`);
+																executeCommand();
+															});
 														} else if(option === options[2]) {
-															channel.appendLine(`Execute '${command.id}' command...`);
+															channel.appendLine(`Execute '${command.text}' command...`);
 															statusBarItem.process = undefined;
 															executeCommand();
 															statusBarItem.text = inProgress;
@@ -145,7 +146,7 @@ function activate(context) {
 												});
 											}
 										} else {
-											channel.appendLine(`Execute '${command.id}' command...`);
+											channel.appendLine(`Execute '${command.text}' command...`);
 											executeCommand();
 											statusBarItem.text = inProgress;
 											channel.show();

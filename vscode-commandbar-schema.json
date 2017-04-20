@@ -9,10 +9,6 @@
 				"type": "object",
 				"required": [ "id", "text", "command" ],
 				"properties": {
-					"id": {
-						"type": "string",
-						"description": "Command unique identifier."
-					},
 					"text": {
 						"type": "string",
 						"description": "Displayed text of status bar item."
