@@ -96,15 +96,7 @@ function activate(context) {
 											}
 
 											if(command.commandType === 'script') {
-												fs.readFile(`${vscode.workspace.rootPath}/package.json`, (err, buffer) => {
-													if(err) {
-														console.error(err);
-													} else {
-														const packageJson = JSON.parse(buffer);
-														exec(packageJson.scripts[command.command]);
-													}
-												});
-
+												exec(`npm run ${command.command}`);
 											} else {
 												exec(command.command);
 											}
