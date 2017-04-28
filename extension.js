@@ -3,6 +3,7 @@ const vscode = require('vscode');
 const childProcess = require( 'child_process' );
 const kill = require( 'tree-kill' );
 const fs = require('fs');
+const path = require('path');
 
 const statusBarItems = {};
 const createNewMessage = 'Settings file had been created. Update wont take effect until restart vscode';
@@ -22,11 +23,10 @@ const exampleJson = `{
 
 function activate(context) {
 	try {
-		const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
-			const settingsDir = `${vscode.workspace.rootPath}\\.vscode`;
-			const settingsPath = `${settingsDir}\\commandbar.json`;
-
-			if(vscode.workspace.rootPath) {
+		if(vscode.workspace.rootPath) {
+			const settingsPath = path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json');
+			const channel = vscode.window.createOutputChannel('Commandbar');
+			const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
 				fs.stat(settingsPath, (err) => {
 					if(!err) {
 						vscode.workspace.openTextDocument(settingsPath).then(doc => {
@@ -50,13 +50,7 @@ function activate(context) {
 							});
 					}
 				});
-			}
-		});
-
-		if(vscode.workspace.rootPath) {
-			const settingsPath = `${vscode.workspace.rootPath}/.vscode/commandbar.json`;
-			const channel = vscode.window.createOutputChannel('Commandbar');
-
+			});
 			fs.stat(settingsPath, (err) => {
 				if(!err) {
 					fs.readFile(settingsPath, (err, buffer) => {
@@ -96,15 +90,7 @@ function activate(context) {
 											}
 
 											if(command.commandType === 'script') {
-												fs.readFile(`${vscode.workspace.rootPath}/package.json`, (err, buffer) => {
-													if(err) {
-														console.error(err);
-													} else {
-														const packageJson = JSON.parse(buffer);
-														exec(packageJson.scripts[command.command]);
-													}
-												});
-
+												exec(`npm run ${command.command}`);
 											} else {
 												exec(command.command);
 											}
@@ -127,10 +113,12 @@ function activate(context) {
 																statusBarItem.text = inProgress;
 																channel.appendLine('Terminated!');
 																channel.show();
+																channel.clear();
 																channel.appendLine(`Execute '${command.text}' command...`);
 																executeCommand();
 															});
 														} else if(option === options[2]) {
+															channel.clear();
 															channel.appendLine(`Execute '${command.text}' command...`);
 															statusBarItem.process = undefined;
 															executeCommand();
@@ -146,6 +134,7 @@ function activate(context) {
 												});
 											}
 										} else {
+											channel.clear();
 											channel.appendLine(`Execute '${command.text}' command...`);
 											executeCommand();
 											statusBarItem.text = inProgress;
@@ -162,10 +151,8 @@ function activate(context) {
 				}
 
 			});
-
+			context.subscriptions.push(vsSettingsCommand);
 		}
-
-		context.subscriptions.push(vsSettingsCommand);
 	} catch(err) {
 		console.error(err);
 	}
