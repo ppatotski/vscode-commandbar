@@ -1,4 +1,3 @@
-'use strict';
 const myExtension = require('../extension');
 
 suite("Extension Tests", function() {

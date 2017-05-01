@@ -15,7 +15,8 @@ A Command bar within VSCode Status bar.
 		* `script`: executes package.json script
 		* `palette`: executes vscode registered command (vscode extension commands)
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
-* Create default settings file (`Ctrl+Shift+P` type `CommandBar: Settings`)
+* Create default settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
+	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
 
 [![Demo](demo.gif)](demo.gif)
 
