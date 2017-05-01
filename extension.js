@@ -55,9 +55,7 @@ function activate(context) {
 					statusBarItems[key].hide();
 				});
 				fs.stat(settingsPath, (err) => {
-					if(err) {
-						console.error(err);
-					} else {
+					if(!err) {
 						fs.readFile(settingsPath, (err, buffer) => {
 							if(err) {
 								console.error(err);
