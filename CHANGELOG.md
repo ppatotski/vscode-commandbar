@@ -1,7 +1,10 @@
 # Change Log
 
+## 0.2.9 (May 1, 2017)
+- Improvement: Apply changes in `commandbar.json` immediately
+
 ## 0.2.6 (April 20, 2017)
-- Improvement: deprecated command `id`
+- Improvement: Deprecated command `id`
 
 ## 0.2.5 (April 14, 2017)
 - Improvement: Different types of commands:
