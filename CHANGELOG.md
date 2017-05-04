@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.10 (May 4, 2017)
+- Issue: Display `Commandbar can only be enabled if VS Code is opened on a workspace folder` command message
+
 ## 0.2.9 (May 1, 2017)
 - Improvement: Apply changes in `commandbar.json` immediately
 
