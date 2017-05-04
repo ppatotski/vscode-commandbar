@@ -21,10 +21,11 @@ const exampleJson = `{
 
 function activate(context) {
 	try {
-		if(vscode.workspace && vscode.workspace.rootPath) {
-			const settingsPath = path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json');
-			const channel = vscode.window.createOutputChannel('Commandbar');
-			const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
+		let settingsPath = '';
+		const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
+			if(!settingsPath) {
+				vscode.window.showErrorMessage('Commandbar can only be enabled if VS Code is opened on a workspace folder');
+			} else {
 				fs.stat(settingsPath, (err) => {
 					if(!err) {
 						vscode.workspace.openTextDocument(settingsPath).then(doc => {
@@ -47,8 +48,12 @@ function activate(context) {
 							});
 					}
 				});
-			});
-			context.subscriptions.push(vsSettingsCommand);
+			}
+		});
+		context.subscriptions.push(vsSettingsCommand);
+		if(vscode.workspace && vscode.workspace.rootPath) {
+			settingsPath = path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json');
+			const channel = vscode.window.createOutputChannel('Commandbar');
 			let commandIndex = 0;
 			const refreshCommands = function refreshCommands() {
 				Object.keys(statusBarItems).forEach((key) => {
