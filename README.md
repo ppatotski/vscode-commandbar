@@ -13,13 +13,12 @@ A Command bar within VSCode Status bar.
 	- 3 types of commands:
 		* `exec`: executes command e.g `npm run serve` (default)
 		* `script`: executes package.json script
-		* `palette`: executes vscode registered command (vscode extension commands)
+		* `palette`: executes any vscode registered command (vscode extension commands)
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
 * Create default settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
 
 [![Demo](demo.gif)](demo.gif)
-
 
 ## Configuration
 
@@ -66,7 +65,7 @@ A Command bar within VSCode Status bar.
 	},
 	"command": {
 		"type": "string",
-		"description": "Command content according to commandType:\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes vscode registered command."
+		"description": "Command content according to commandType:\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes any vscode registered command."
 	},
 	"alignment": {
 		"type": "string",
@@ -93,7 +92,7 @@ A Command bar within VSCode Status bar.
 	},
 	"commandType": {
 		"type": "string",
-		"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes vscode registered command.",
+		"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes any vscode registered command.",
 		"enum": [
 			"exec",
 			"script",
