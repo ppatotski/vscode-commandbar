@@ -1,0 +1,9 @@
+{
+	"commands": [
+		{
+			"text": "Deploy Commandbar",
+			"color": "lightgreen",
+			"command": "vsce publish"
+		}
+	]
+}

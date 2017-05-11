@@ -87,9 +87,14 @@ function activate(context) {
 										const vsCommand = vscode.commands.registerCommand(commandId, () => {
 											const executeCommand = function executeCommand() {
 												const exec = function exec(commandContent) {
-													const process = childProcess.exec(commandContent, { cwd: vscode.workspace.rootPath }, () => {
+													const process = childProcess.exec(commandContent, { cwd: vscode.workspace.rootPath, maxBuffer: 1073741824 }, (err) => {
 														statusBarItem.text = command.text;
 														statusBarItem.process = undefined;
+														if(!statusBarItem.aboutToBeKilled) {
+															vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+															channel.show();
+														}
+														statusBarItem.aboutToBeKilled = false;
 													});
 													process.stdout.on('data', data => channel.append(data));
 													process.stderr.on('data', data => channel.append(data));
@@ -110,12 +115,14 @@ function activate(context) {
 													vscode.window.showQuickPick(options)
 														.then((option) => {
 															if(option === options[0]) {
+																statusBarItem.aboutToBeKilled = true;
 																kill(statusBarItem.process.pid, 'SIGTERM', () => {
 																	channel.appendLine('Terminated!');
 																	statusBarItem.process = undefined;
 																	statusBarItem.text = command.text;
 																});
 															} else if(option === options[1]) {
+																statusBarItem.aboutToBeKilled = true;
 																kill(statusBarItem.process.pid, 'SIGTERM', () => {
 																	statusBarItem.text = inProgress;
 																	channel.show();
@@ -133,6 +140,7 @@ function activate(context) {
 															}
 														});
 												} else {
+													statusBarItem.aboutToBeKilled = true;
 													kill(statusBarItem.process.pid, 'SIGTERM', () => {
 														channel.appendLine('Terminated!');
 														statusBarItem.process = undefined;

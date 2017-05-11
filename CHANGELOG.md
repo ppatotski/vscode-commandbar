@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.11 (May 11, 2017)
+- Improvement: Display message in case of failed executed command
+
 ## 0.2.10 (May 4, 2017)
 - Issue: Display `Commandbar can only be enabled if VS Code is opened on a workspace folder` command message
 
