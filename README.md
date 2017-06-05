@@ -20,11 +20,41 @@ A Command bar within VSCode Status bar.
 
 [![Demo](demo.gif)](demo.gif)
 
-## Configuration
+## Settings Reference
 
-### Config file example (`./.vscode/commandbar.json`)
+General options
+* **skipTerminateQuickPick** Do not show Terminate QuickPick.
+	> Terminates running command by default
+* **skipSwitchToOutput** Do not switch to Output.
+* **skipErrorMessage** Do not popup Error message.
+* **commands** List of commands.
+
+Command options
+* **text** Displayed text of status bar item.
+	> Supports unicode "icon" that can be found [here](https://unicode-table.com/) ).
+* **command** Command content according to commandType:
+	- 'exec': executes command e.g 'npm run serve' (default).
+	- 'script': executes package.json script.
+	- 'palette': executes any vscode registered command.
+* **alignment** Alignment of status bar item.
+* **tooltip** Tooltip of status bar item.
+* **color** Text color of status bar item.
+* **priority** Priority (placement) of status bar item.
+* **commandType** Type of command.
+	- 'exec': executes command e.g 'npm run serve' (default).
+	- 'script': executes package.json script.
+	- 'palette': executes any vscode registered command.
+* **skipTerminateQuickPick** overwrite general `skipTerminateQuickPick` option.
+* **skipSwitchToOutput** overwrite general `skipSwitchToOutput` option.
+* **skipErrorMessage** overwrite general `skipErrorMessage` option.
+
+## Config file example (`./.vscode/commandbar.json`)
+
 ```json
 {
+	"skipTerminateQuickPick": true,
+	"skipSwitchToOutput": false,
+	"skipErrorMessage": true,
 	"commands": [
 		{
 			"text": "Serve Polymer UI",
@@ -44,7 +74,7 @@ A Command bar within VSCode Status bar.
 			"priority": 2
 		},
 		{
-			"text": "❊",
+			"text": "☯",
 			"tooltip": "ESLint: Fix All",
 			"color": "orange",
 			"commandType": "palette",
@@ -56,52 +86,6 @@ A Command bar within VSCode Status bar.
 }
 ```
 
-### Configuration file schema (documentation)
-```json
-{
-	"text": {
-		"type": "string",
-		"description": "Displayed text of status bar item."
-	},
-	"command": {
-		"type": "string",
-		"description": "Command content according to commandType:\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes any vscode registered command."
-	},
-	"alignment": {
-		"type": "string",
-		"description": "Alignment of status bar item.",
-		"enum": [ "left", "right" ],
-		"default": "left"
-	},
-	"tooltip": {
-		"type": "string",
-		"description": "Tooltip of status bar item."
-	},
-	"color": {
-		"type": "string",
-		"description": "Text color of status bar item."
-	},
-	"priority": {
-		"type": "number",
-		"description": "Priority (placement) of status bar item."
-	},
-	"skipTerminateQuickPick": {
-		"type": "boolean",
-		"description": "Do not show Terminate QuickPick.",
-		"default": false
-	},
-	"commandType": {
-		"type": "string",
-		"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes package.json script.\n3. 'palette': executes any vscode registered command.",
-		"enum": [
-			"exec",
-			"script",
-			"palette"
-		],
-		"default": "exec"
-	}
-}
-```
 ## Change Log
 
 [Change Log](CHANGELOG.md)

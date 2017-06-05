@@ -6,9 +6,12 @@ const path = require('path');
 
 const statusBarItems = {};
 const exampleJson = `{
+	"skipTerminateQuickPick": true,
+	"skipSwitchToOutput": false,
+	"skipErrorMessage": true,
 	"commands": [
 		{
-			"text": "❊ Serve",
+			"text": "☯ Serve",
 			"tooltip": "Serve UI",
 			"color": "yellow",
 			"command": "npm run serve",
@@ -72,6 +75,9 @@ function activate(context) {
 									const statusBarItem = vscode.window.createStatusBarItem(alignment, command.priority);
 									const commandId = `extension.commandbar.command_${commandIndex}`;
 									const inProgress = `${command.text} (in progress)`;
+									const skipSwitchToOutput = command.skipSwitchToOutput === undefined ? settings.skipSwitchToOutput : command.skipSwitchToOutput;
+									const skipTerminateQuickPick = command.skipTerminateQuickPick === undefined ? settings.skipTerminateQuickPick : command.skipTerminateQuickPick;
+									const skipErrorMessage = command.skipErrorMessage === undefined ? settings.skipErrorMessage : command.skipErrorMessage;
 
 									statusBarItem.text = command.text;
 									statusBarItem.tooltip = command.tooltip;
@@ -84,6 +90,11 @@ function activate(context) {
 									if(command.commandType === 'palette') {
 										statusBarItem.command = command.command;
 									} else {
+										const showOutput = function showOutput() {
+											if(!skipSwitchToOutput) {
+												channel.show();
+											}
+										}
 										const vsCommand = vscode.commands.registerCommand(commandId, () => {
 											const executeCommand = function executeCommand() {
 												const exec = function exec(commandContent) {
@@ -91,8 +102,10 @@ function activate(context) {
 														statusBarItem.text = command.text;
 														statusBarItem.process = undefined;
 														if(!statusBarItem.aboutToBeKilled) {
-															vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
-															channel.show();
+															if (!skipErrorMessage) {
+																vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+															}
+															showOutput();
 														}
 														statusBarItem.aboutToBeKilled = false;
 													});
@@ -109,7 +122,7 @@ function activate(context) {
 											}
 
 											if(statusBarItem.process) {
-												if(!command.skipTerminateQuickPick) {
+												if(!skipTerminateQuickPick) {
 													const options = ['Terminate', 'Terminate and Execute', 'Execute without terminating already running command', 'Cancel'];
 
 													vscode.window.showQuickPick(options)
@@ -125,7 +138,7 @@ function activate(context) {
 																statusBarItem.aboutToBeKilled = true;
 																kill(statusBarItem.process.pid, 'SIGTERM', () => {
 																	statusBarItem.text = inProgress;
-																	channel.show();
+																	showOutput();
 																	channel.clear();
 																	channel.appendLine(`Execute '${command.text}' command...`);
 																	executeCommand();
@@ -136,7 +149,7 @@ function activate(context) {
 																statusBarItem.process = undefined;
 																executeCommand();
 																statusBarItem.text = inProgress;
-																channel.show();
+																showOutput();
 															}
 														});
 												} else {
@@ -152,7 +165,7 @@ function activate(context) {
 												channel.appendLine(`Execute '${command.text}' command...`);
 												executeCommand();
 												statusBarItem.text = inProgress;
-												channel.show();
+												showOutput();
 											}
 										});
 										context.subscriptions.push(vsCommand);
