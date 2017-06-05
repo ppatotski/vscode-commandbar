@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.12 (June 5, 2017)
+- Improvement: Documentation
+- Improvement: Extended configuration options (`skipTerminateQuickPick`, `skipSwitchToOutput` and `skipErrorMessage`)
+
 ## 0.2.11 (May 11, 2017)
 - Improvement: Display message in case of failed executed command
 
