@@ -31,7 +31,7 @@ General options
 
 Command options
 * **text** Displayed text of status bar item.
-	> Supports unicode "icon" that can be found [here](https://unicode-table.com/) ).
+	> Supports unicode "icon" that can be found [here](https://unicode-table.com/).
 * **command** Command content according to commandType:
 	- 'exec': executes command e.g 'npm run serve' (default).
 	- 'script': executes package.json script.
