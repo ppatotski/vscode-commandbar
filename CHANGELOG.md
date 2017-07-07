@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.13 (July 7, 2017)
+- Improvement: Documentation
+- Issue: Adjusted extension to the latest VSCode extension requirements
+
 ## 0.2.12 (June 5, 2017)
 - Improvement: Documentation
 - Improvement: Extended configuration options (`skipTerminateQuickPick`, `skipSwitchToOutput` and `skipErrorMessage`)
