@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.14 (July 11, 2017)
+- Improvement: Updated documentation with link to [icons](https://octicons.github.com/)
+- Improvement: Support comments in json configuration file
+
 ## 0.2.13 (July 7, 2017)
 - Improvement: Documentation
 - Issue: Adjusted extension to the latest VSCode extension requirements

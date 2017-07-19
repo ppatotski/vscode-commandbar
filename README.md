@@ -17,6 +17,7 @@ A Command bar within VSCode Status bar.
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
 * Create default settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
+	- Support comments in JSON as an extension to JSON specification
 
 [![Demo](demo.gif)](demo.gif)
 
@@ -32,6 +33,7 @@ General options
 Command options
 * **text** Displayed text of status bar item.
 	> Supports unicode "icon" that can be found [here](https://unicode-table.com/).
+	> Supports icons from [here](https://octicons.github.com/) e.g. `$(mark-github) Go To GitHub`
 * **command** Command content according to commandType:
 	- 'exec': executes command e.g 'npm run serve' (default).
 	- 'script': executes package.json script.
@@ -67,7 +69,7 @@ Command options
 			"priority": 1
 		},
 		{
-			"text": "Test Polymer UI",
+			"text": "$(octicon-bug) Test Polymer UI",
 			"color": "lightgreen",
 			"commandType": "script",
 			"command": "test",

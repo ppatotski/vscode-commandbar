@@ -3,6 +3,7 @@ const childProcess = require( 'child_process' );
 const kill = require('tree-kill');
 const fs = require('fs');
 const path = require('path');
+const strip = require('strip-json-comments');
 
 const statusBarItems = {};
 const exampleJson = `{
@@ -68,7 +69,7 @@ function activate(context) {
 							if(err) {
 								console.error(err);
 							} else {
-								const settings = JSON.parse(buffer);
+								const settings = JSON.parse(strip(buffer.toString()));
 								settings.commands.forEach( (command) => {
 									commandIndex += 1;
 									const alignment = command.alignment === 'right'? vscode.StatusBarAlignment.Right: vscode.StatusBarAlignment.Left;
