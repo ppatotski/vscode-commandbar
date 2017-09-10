@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.15 (September 10, 2017)
+- Improvement: Added global settings support
+
 ## 0.2.14 (July 21, 2017)
 - Improvement: Updated documentation with link to [icons](https://octicons.github.com/)
 - Improvement: Support comments in json configuration file
