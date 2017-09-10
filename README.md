@@ -15,7 +15,7 @@ A Command bar within VSCode Status bar.
 		* `script`: executes package.json script
 		* `palette`: executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
-* Create default settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
+* Create workspace and global settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
 	- Support comments in JSON as an extension to JSON specification
 
@@ -50,7 +50,7 @@ Command options
 * **skipSwitchToOutput** overwrite general `skipSwitchToOutput` option.
 * **skipErrorMessage** overwrite general `skipErrorMessage` option.
 
-## Config file example (`./.vscode/commandbar.json`)
+## Config file example (`./.vscode/commandbar.json` or `~/commandbar.json`)
 
 ```json
 {
