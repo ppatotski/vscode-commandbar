@@ -138,51 +138,79 @@ function activate(context) {
 											}
 										}
 
-										if(statusBarItem.process) {
-											if(!skipTerminateQuickPick) {
-												const options = ['Terminate', 'Terminate and Execute', 'Execute without terminating already running command', 'Cancel'];
-
-												vscode.window.showQuickPick(options)
-													.then((option) => {
-														if(option === options[0]) {
-															statusBarItem.aboutToBeKilled = true;
-															kill(statusBarItem.process.pid, 'SIGTERM', () => {
-																channel.appendLine('Terminated!');
-																statusBarItem.process = undefined;
-																statusBarItem.text = command.text;
-															});
-														} else if(option === options[1]) {
-															statusBarItem.aboutToBeKilled = true;
-															kill(statusBarItem.process.pid, 'SIGTERM', () => {
-																statusBarItem.text = inProgress;
-																showOutput();
-																channel.clear();
-																channel.appendLine(`Execute '${command.text}' command...`);
-																executeCommand();
-															});
-														} else if(option === options[2]) {
-															channel.clear();
-															channel.appendLine(`Execute '${command.text}' command...`);
-															statusBarItem.process = undefined;
-															executeCommand();
-															statusBarItem.text = inProgress;
-															showOutput();
-														}
-													});
-											} else {
-												statusBarItem.aboutToBeKilled = true;
-												kill(statusBarItem.process.pid, 'SIGTERM', () => {
-													channel.appendLine('Terminated!');
-													statusBarItem.process = undefined;
-													statusBarItem.text = command.text;
+										if(command.commandType === 'file') {
+											const openFile = function openFile( path ) {
+												let file = path;
+												if( file[0] === '~' ) {
+													file = file.replace('~', process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE);
+												} else if( file[0] === '.' ) {
+													file = file.replace('.', vscode.workspace.rootPath);
+												}
+												vscode.workspace.openTextDocument(file).then(doc => {
+													vscode.window.showTextDocument(doc);
 												});
 											}
+											if( command.command ) {
+												let files = command.command.split(',');
+												if( files.length > 1 ) {
+													if( !vscode.workspace.rootPath ) {
+														files = files.filter( file => file[0] !== '.' );
+													}
+													vscode.window.showQuickPick(files)
+														.then((file) => {
+															openFile(file);
+														});
+												} else {
+													openFile(files[0]);
+												}
+											}
 										} else {
-											channel.clear();
-											channel.appendLine(`Execute '${command.text}' command...`);
-											executeCommand();
-											statusBarItem.text = inProgress;
-											showOutput();
+											if(statusBarItem.process) {
+												if(!skipTerminateQuickPick) {
+													const options = ['Terminate', 'Terminate and Execute', 'Execute without terminating already running command', 'Cancel'];
+
+													vscode.window.showQuickPick(options)
+														.then((option) => {
+															if(option === options[0]) {
+																statusBarItem.aboutToBeKilled = true;
+																kill(statusBarItem.process.pid, 'SIGTERM', () => {
+																	channel.appendLine('Terminated!');
+																	statusBarItem.process = undefined;
+																	statusBarItem.text = command.text;
+																});
+															} else if(option === options[1]) {
+																statusBarItem.aboutToBeKilled = true;
+																kill(statusBarItem.process.pid, 'SIGTERM', () => {
+																	statusBarItem.text = inProgress;
+																	showOutput();
+																	channel.clear();
+																	channel.appendLine(`Execute '${command.text}' command...`);
+																	executeCommand();
+																});
+															} else if(option === options[2]) {
+																channel.clear();
+																channel.appendLine(`Execute '${command.text}' command...`);
+																statusBarItem.process = undefined;
+																executeCommand();
+																statusBarItem.text = inProgress;
+																showOutput();
+															}
+														});
+												} else {
+													statusBarItem.aboutToBeKilled = true;
+													kill(statusBarItem.process.pid, 'SIGTERM', () => {
+														channel.appendLine('Terminated!');
+														statusBarItem.process = undefined;
+														statusBarItem.text = command.text;
+													});
+												}
+											} else {
+												channel.clear();
+												channel.appendLine(`Execute '${command.text}' command...`);
+												executeCommand();
+												statusBarItem.text = inProgress;
+												showOutput();
+											}
 										}
 									});
 									context.subscriptions.push(vsCommand);

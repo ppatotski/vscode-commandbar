@@ -14,6 +14,7 @@ A Command bar within VSCode Status bar.
 		* `exec`: executes command e.g `npm run serve` (default)
 		* `script`: executes package.json script
 		* `palette`: executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command
+		* `file`: opens a file(s)
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority)
 * Create workspace and global settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
@@ -38,6 +39,7 @@ Command options
 	- 'exec': executes command e.g 'npm run serve' (default).
 	- 'script': executes package.json script.
 	- 'palette': executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command
+	- 'file': opens a file (comma-separated paths)
 * **alignment** Alignment of status bar item.
 * **tooltip** Tooltip of status bar item.
 * **color** Text color of status bar item.
@@ -46,6 +48,7 @@ Command options
 	- 'exec': executes command e.g 'npm run serve' (default).
 	- 'script': executes package.json script.
 	- 'palette': executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command
+	- 'file': opens a file (comma-separated paths)
 * **skipTerminateQuickPick** overwrite general `skipTerminateQuickPick` option.
 * **skipSwitchToOutput** overwrite general `skipSwitchToOutput` option.
 * **skipErrorMessage** overwrite general `skipErrorMessage` option.
