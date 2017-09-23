@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.16 (September 23, 2017)
+- Improvement: Added `file` command type
+
 ## 0.2.15 (September 10, 2017)
 - Improvement: Added global settings support
 

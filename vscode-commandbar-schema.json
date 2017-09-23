@@ -52,11 +52,12 @@
 					},
 					"commandType": {
 						"type": "string",
-						"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes 'package.json' script.\n3. 'palette': executes vscode registered command.",
+						"description": "Type of command.\n1. 'exec': executes command e.g 'npm run serve' (default).\n2. 'script': executes 'package.json' script.\n3. 'palette': executes vscode registered command.\n4. 'file': opens a file(s).",
 						"enum": [
 							"exec",
 							"script",
-							"palette"
+							"palette",
+							"file"
 						],
 						"default": "exec"
 					},
