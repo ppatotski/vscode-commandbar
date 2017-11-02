@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.17 (November 2, 2017)
+- Improvement: Added multi-command support for `palette` command type
+
 ## 0.2.16 (September 23, 2017)
 - Improvement: Added `file` command type
 
