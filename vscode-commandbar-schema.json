@@ -46,6 +46,10 @@
 						"type": "string",
 						"description": "Text color of status bar item."
 					},
+					"language": {
+						"type": "string",
+						"description": "Language filter of status bar item."
+					},
 					"priority": {
 						"type": "number",
 						"description": "Priority (placement) of status bar item."
