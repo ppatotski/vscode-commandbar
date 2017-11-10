@@ -131,7 +131,7 @@ function activate(context) {
 
 										if(command.commandType === 'script') {
 											exec(`npm run ${command.command}`);
-										} if (command.commandType === 'palette') {
+										} else if (command.commandType === 'palette') {
 											const executeNext = function executeNext(palette, index) {
 												vscode.commands.executeCommand(palettes[index]).then(() => {
 													index += 1;

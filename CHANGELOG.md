@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.19 (November 12, 2017)
+- Bug: Fixed script command type extra execution issue
+
 ## 0.2.18 (November 10, 2017)
 - Improvement: Added support for language filter for command
 
