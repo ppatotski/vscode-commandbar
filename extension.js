@@ -74,6 +74,7 @@ function activate(context) {
 		context.subscriptions.push(vsSettingsCommand);
 		const channel = vscode.window.createOutputChannel('Commandbar');
 		let commandIndex = 0;
+		let settings;
 		const refreshCommands = function refreshCommands() {
 			Object.keys(statusBarItems).forEach((key) => {
 				statusBarItems[key].hide();
@@ -85,7 +86,7 @@ function activate(context) {
 						if(err) {
 							console.error(err);
 						} else {
-							const settings = JSON.parse(strip(buffer.toString()));
+							settings = JSON.parse(strip(buffer.toString()));
 							settings.commands.forEach( (command) => {
 								commandIndex += 1;
 								const alignment = command.alignment === 'right'? vscode.StatusBarAlignment.Right: vscode.StatusBarAlignment.Left;
@@ -229,13 +230,32 @@ function activate(context) {
 								});
 								context.subscriptions.push(vsCommand);
 							});
-
 						}
 					});
 				}
 
 			});
 		}
+		vscode.window.onDidChangeActiveTextEditor((event) => {
+			if(settings) {
+				settings.commands.forEach(command => {
+					if(command.language) {
+						let statusBarItem;
+						Object.keys(statusBarItems).forEach((key) => {
+							if(statusBarItems[key].text === command.text) {
+								statusBarItem = statusBarItems[key];
+							}
+						});
+						vscode.languages.match({ language: command.language }, event.document);
+						if(vscode.languages.match({ language: command.language }, event.document)) {
+							statusBarItem.show();
+						} else {
+							statusBarItem.hide();
+						}
+					}
+				});
+			}
+		});
 		vscode.workspace.onDidSaveTextDocument((doc) => {
 			if(vscode.languages.match({ pattern: settingsPath }, doc)) {
 				refreshCommands();
@@ -253,6 +273,7 @@ function activate(context) {
 		} else {
 			refreshCommands();
 		}
+
 	} catch(err) {
 		console.error(err);
 	}
