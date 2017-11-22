@@ -133,7 +133,8 @@ function activate(context) {
 											exec(`npm run ${command.command}`);
 										} if (command.commandType === 'palette') {
 											const executeNext = function executeNext(palette, index) {
-												vscode.commands.executeCommand(palettes[index]).then(() => {
+												const commargs = palettes[index].split(':');
+												vscode.commands.executeCommand(commargs[0],...commargs.slice(1)).then(() => {
 													index += 1;
 													if(index < palettes.length) {
 														executeNext(palettes, index);

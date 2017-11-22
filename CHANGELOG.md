@@ -1,4 +1,5 @@
 # Change Log
+- Improvement: Added command parameters support for `palette` command type (separated by ':')
 
 ## 0.2.18 (November 10, 2017)
 - Improvement: Added support for language filter for command
