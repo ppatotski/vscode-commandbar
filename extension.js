@@ -150,16 +150,21 @@ function activate(context) {
 									}
 
 									if(command.commandType === 'file') {
-										const openFile = function openFile( path ) {
-											let file = path;
-											if( file[0] === '~' ) {
-												file = file.replace('~', process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE);
-											} else if( file[0] === '.' ) {
-												file = file.replace('.', vscode.workspace.rootPath);
+										const openFile = function openFile( rawPath ) {
+											const uri = vscode.Uri.parse(rawPath);
+											if( uri.scheme ) {
+												vscode.commands.executeCommand('vscode.open', uri);
+											} else {
+												let file = rawPath;
+												if( file[0] === '~' ) {
+													file = file.replace('~', process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE);
+												} else if( file[0] === '.' ) {
+													file = file.replace('.', vscode.workspace.rootPath);
+												}
+												vscode.workspace.openTextDocument(file).then(doc => {
+													vscode.window.showTextDocument(doc);
+												});
 											}
-											vscode.workspace.openTextDocument(file).then(doc => {
-												vscode.window.showTextDocument(doc);
-											});
 										}
 										if( command.command ) {
 											let files = command.command.split(',');
