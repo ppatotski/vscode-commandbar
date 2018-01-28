@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.20 (January 28, 2018)
+- Improvement: Added support for url openning
+
+## 0.2.19 (November 13, 2017)
+- Bug: Fixed script command type extra execution issue
+
 ## 0.2.18 (November 10, 2017)
 - Improvement: Added support for language filter for command
 
