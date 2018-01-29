@@ -1,4 +1,5 @@
 # Change Log
+- Improvement: Added command parameters support for `palette` command type (separated by ':')
 
 ## 0.2.20 (January 28, 2018)
 - Improvement: Added support for url openning
