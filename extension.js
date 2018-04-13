@@ -168,17 +168,17 @@ function activate(context) {
 											}
 										}
 										if (command.command) {
-											let files = command.command.split(',');
+											let files = command.command.split(',').map(file => file.split('|'));
 											if (files.length > 1) {
 												if (!vscode.workspace.rootPath) {
-													files = files.filter( file => file[0] !== '.' );
+													files = files.filter(file => file[0][0] !== '.');
 												}
-												vscode.window.showQuickPick(files)
-													.then((file) => {
-														openFile(file);
+												vscode.window.showQuickPick(files.map(file => file.length > 1 ? file[1]: file[0]))
+													.then((label) => {
+														openFile(files.find(file => file.length > 1 ? file[1] === label: file[0] === label)[0]);
 													});
 											} else {
-												openFile(files[0]);
+												openFile(files[0].split('|')[0]);
 											}
 										}
 									} else {
