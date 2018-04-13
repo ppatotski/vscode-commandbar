@@ -17,6 +17,8 @@ A Command bar within VSCode Status bar.
 			- comma-separated list of commands that get executed sequentially
 			- command support arguments separated by pipe (e.g. `workbench.action.tasks.runTask|My Task`)
 		* `file`: opens a file(s) or an url(s) in a browser
+			- comma-separated list of files that is shown as a dropdown
+			- support label followed by pipe (e.g. `https://somesite.com|My Site`)
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority, language filter)
 * Create workspace and global settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
@@ -44,6 +46,8 @@ Command options
 		* comma-separated list of commands that get executed sequentially
 		* command support arguments separated by pipe (e.g. `workbench.action.tasks.runTask|My Task`)
 	- 'file': opens a file or an url (comma-separated list)
+		* comma-separated list of files that is shown as a dropdown
+		* support label followed by pipe (e.g. `https://somesite.com|My Site`)
 * **alignment** Alignment of status bar item.
 * **tooltip** Tooltip of status bar item.
 * **color** Text color of status bar item.
