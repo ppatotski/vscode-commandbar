@@ -13,7 +13,9 @@ A Command bar within VSCode Status bar.
 	- 3 types of commands:
 		* `exec`: executes command e.g `npm run serve` (default)
 		* `script`: executes package.json script
-		* `palette`: executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command (comma-separated list of commands that get executed sequentially)
+		* `palette`: executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command
+			- comma-separated list of commands that get executed sequentially
+			- command support arguments separated by pipe (e.g. `workbench.action.tasks.runTask:My Task`)
 		* `file`: opens a file(s) or an url(s) in a browser
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority, language filter)
 * Create workspace and global settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
@@ -38,7 +40,9 @@ Command options
 * **command** Command content according to commandType:
 	- 'exec': executes command e.g 'npm run serve' (default).
 	- 'script': executes package.json script.
-	- 'palette': executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command (comma-separated list of commands that get executed sequentially)
+	- 'palette': executes any [vscode command](https://code.visualstudio.com/docs/getstarted/keybindings#_default-keyboard-shortcuts) or any extension command
+		* comma-separated list of commands that get executed sequentially
+		* command support arguments separated by pipe (e.g. `workbench.action.tasks.runTask:My Task`)
 	- 'file': opens a file or an url (comma-separated list)
 * **alignment** Alignment of status bar item.
 * **tooltip** Tooltip of status bar item.
