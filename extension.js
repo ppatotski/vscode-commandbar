@@ -178,7 +178,7 @@ function activate(context) {
                             openFile(files.find(file => file.length > 1 ? file[1] === label : file[0] === label)[0]);
                           });
                       } else {
-                        openFile(files[0].split('|')[0]);
+                        openFile(files[0][0]);
                       }
                     }
                   } else {
