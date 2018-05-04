@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.2.23 (May 4, 2018)
+- Bug: Fixed single file command issue
+
+## 0.2.22 (April 25, 2018)
+- Improvement: Added support for `file` label
+
 ## 0.2.21 (April 13, 2018)
 - Improvement: Added support for `palette` command arguments
 
