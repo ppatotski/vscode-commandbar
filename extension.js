@@ -23,6 +23,37 @@ const exampleJson = `{
 	]
 }`;
 
+const variableRegEx = /\$\{(.*?)\}/g;
+const resolveVariablesFunctions = {
+  env: (name) => process.env[name.toUpperCase()],
+  cwd: () => process.cwd(),
+  workspaceRoot: () => vscode.workspace.rootPath,
+  workspaceFolder: () => vscode.workspace.rootPath,
+  workspaceRootFolderName: () => path.basename(vscode.workspace.rootPath),
+  workspaceFolderBasename: () => path.basename(vscode.workspace.rootPath),
+  lineNumber: () => vscode.window.activeTextEditor.selection.active.line,
+  selectedText: () => vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection),
+  file: () => vscode.window.activeTextEditor.document.fileName,
+  fileDirname: () => path.dirname(vscode.window.activeTextEditor.document.fileName),
+  fileExtname: () => path.extname(vscode.window.activeTextEditor.document.fileName),
+  fileBasename: () => path.basename(vscode.window.activeTextEditor.document.fileName),
+  fileBasenameNoExtension: () => {
+    const basename = path.basename(vscode.window.activeTextEditor.document.fileName);
+    return basename.slice(0, basename.length - path.extname(basename).length);
+  },
+  execPath: () => process.execpath,
+}
+
+const resolveVariables = function resolveVariables(commandLine) {
+  return commandLine.replace(variableRegEx, function replaceVariable(match, variableValue) {
+    const [variable, argument] = variableValue.split(':');
+    const resolver = resolveVariablesFunctions[variable];
+    if (!resolver) throw new Error(`Variable ${variable} not found!`);
+
+    return resolver(argument);
+  });
+}
+
 function activate(context) {
   try {
     let workspaceSettings = false;
@@ -113,35 +144,48 @@ function activate(context) {
                 const vsCommand = vscode.commands.registerCommand(commandId, () => {
                   const executeCommand = function executeCommand() {
                     const exec = function exec(commandContent) {
-                      const process = childProcess.exec(commandContent, { cwd: vscode.workspace.rootPath, maxBuffer: 1073741824 }, (err) => {
-                        statusBarItem.text = command.text;
-                        statusBarItem.process = undefined;
-                        if (!statusBarItem.aboutToBeKilled) {
-                          if (!skipErrorMessage && err) {
-                            vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+                      try {
+                        const process = childProcess.exec(resolveVariables(commandContent), { cwd: vscode.workspace.rootPath, maxBuffer: 1073741824 }, (err) => {
+                          statusBarItem.text = command.text;
+                          statusBarItem.process = undefined;
+                          if (!statusBarItem.aboutToBeKilled) {
+                            if (!skipErrorMessage && err) {
+                              vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+                            }
+                            showOutput();
                           }
-                          showOutput();
-                        }
-                        statusBarItem.aboutToBeKilled = false;
-                      });
-                      process.stdout.on('data', data => channel.append(data));
-                      process.stderr.on('data', data => channel.append(data));
-                      statusBarItem.process = process;
+                          statusBarItem.aboutToBeKilled = false;
+                        });
+                        process.stdout.on('data', data => channel.append(data));
+                        process.stderr.on('data', data => channel.append(data));
+                        statusBarItem.process = process;
+                      } catch (err) {
+                        vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+                        channel.append(err.toString());
+                        showOutput();
+                      }
                     }
 
                     if (command.commandType === 'script') {
                       exec(`npm run ${command.command}`);
                     } else if (command.commandType === 'palette') {
                       const executeNext = function executeNext(palette, index) {
-                        // support for pipe separated arguments
-                        vscode.commands.executeCommand(...palettes[index].split('|')).then(() => {
-                          index += 1;
-                          if (index < palettes.length) {
-                            executeNext(palettes, index);
-                          }
-                        }, (err) => {
-                          vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message}`);
-                        });
+                        try {
+                          let [cmd, ...args] = palettes[index].split('|');
+                          if (args) args = args.map(arg => resolveVariables(arg));
+                          vscode.commands.executeCommand(cmd, ...args).then(() => {
+                            index += 1;
+                            if (index < palettes.length) {
+                              executeNext(palettes, index);
+                            }
+                          }, (err) => {
+                            vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message}`);
+                          });
+                        } catch (err) {
+                          vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+                          channel.append(err.toString());
+                          showOutput();
+                        }
                       }
                       const palettes = command.command.split(',');
                       executeNext(palettes, 0);
@@ -151,20 +195,27 @@ function activate(context) {
                   }
 
                   if (command.commandType === 'file') {
-                    const openFile = function openFile(rawPath) {
-                      const uri = vscode.Uri.parse(rawPath);
-                      if (uri.scheme) {
-                        vscode.commands.executeCommand('vscode.open', uri);
-                      } else {
-                        let file = rawPath;
-                        if (file[0] === '~') {
-                          file = file.replace('~', process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE);
-                        } else if (file[0] === '.') {
-                          file = file.replace('.', vscode.workspace.rootPath);
+                    const openFile = function openFile(filePath) {
+                      try {
+                        const rawPath = resolveVariables(filePath);
+                        const uri = vscode.Uri.parse(rawPath);
+                        if (uri.scheme) {
+                          vscode.commands.executeCommand('vscode.open', uri);
+                        } else {
+                          let file = rawPath;
+                          if (file[0] === '~') {
+                            file = file.replace('~', process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE);
+                          } else if (file[0] === '.') {
+                            file = file.replace('.', vscode.workspace.rootPath);
+                          }
+                          vscode.workspace.openTextDocument(file).then(doc => {
+                            vscode.window.showTextDocument(doc);
+                          });
                         }
-                        vscode.workspace.openTextDocument(file).then(doc => {
-                          vscode.window.showTextDocument(doc);
-                        });
+                      } catch (err) {
+                        vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`);
+                        channel.append(err.toString());
+                        showOutput();
                       }
                     }
                     if (command.command) {

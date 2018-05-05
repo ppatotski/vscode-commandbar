@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.24 (May 10, 2018)
+- Improvement: Global Variables support
+
 ## 0.2.23 (May 4, 2018)
 - Bug: Fixed single file command issue
 

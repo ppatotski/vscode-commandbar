@@ -19,6 +19,7 @@ A Command bar within VSCode Status bar.
 		* `file`: opens a file(s) or an url(s) in a browser
 			- comma-separated list of files that is shown as a dropdown
 			- support label followed by pipe (e.g. `https://somesite.com|My Site`)
+* Global Variables support (e.g. `eslint ${file}`)
 * Configurable Status bar item properties (including text, tooltip, alignment, color, priority, language filter)
 * Create workspace and global settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
