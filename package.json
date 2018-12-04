@@ -2,7 +2,7 @@
   "name": "vscode-commandbar",
   "displayName": "vscode-commandbar",
   "description": "Visual Studio Code Command bar",
-  "version": "0.2.24",
+  "version": "0.2.25",
   "publisher": "gsppvo",
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://github.com/ppatotski/vscode-commandbar",
@@ -85,7 +85,7 @@
   "devDependencies": {
     "@types/mocha": "^2.2.44",
     "@types/node": "^6.0.90",
-    "eslint": "^3.6.0",
+    "standard": "^12.0.1",
     "mocha": "^2.3.3",
     "vscode": "^1.1.6"
   },
