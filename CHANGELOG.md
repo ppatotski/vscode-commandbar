@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.25 (Dec 3, 2018)
+- Improvement: Combine global and local settings
+
 ## 0.2.24 (May 10, 2018)
 - Improvement: Global Variables support
 

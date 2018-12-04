@@ -24,6 +24,7 @@ A Command bar within VSCode Status bar.
 * Create workspace and global settings file (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`)
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
 	- Support comments in JSON as an extension to JSON specification
+	- Combine global and local settings
 
 [![Demo](demo.gif)](demo.gif)
 
