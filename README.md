@@ -6,6 +6,7 @@ A Command bar within VSCode Status bar.
 > 1. Open VSCode with no workspace openned.
 > 2. Create Global Settings (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`).
 > 3. Copy commands from existing global file (`~/<user>/commandbar.json`) to newly created one.
+>
 > Sorry for inconvenience.
 
 ## Get Started
