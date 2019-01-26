@@ -54,8 +54,8 @@ const resolveVariables = function resolveVariables (commandLine) {
   })
 }
 
-function readSettings (done) {
-  const homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+function readSettings (context, done) {
+  const homePath = context.extensionPath
   fs.readFile(path.join(homePath, 'commandbar.json'), (err, buffer) => {
     let combinedSettings = {}
     let commands = []
@@ -64,39 +64,29 @@ function readSettings (done) {
       commands = combinedSettings.commands
     }
 
-    fs.readFile(path.join(homePath, '.vscode', 'commandbar.json'), (err, buffer) => {
-      if (!err) {
-        const settings = JSON.parse(strip(buffer.toString()))
-        combinedSettings = {
-          ...combinedSettings,
-          ...settings
-        }
-        commands = [ ...commands, ...settings.commands ]
-      }
-      if (vscode.workspace && vscode.workspace.rootPath) {
-        fs.readFile(path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json'), (err, buffer) => {
-          if (!err) {
-            const settings = JSON.parse(strip(buffer.toString()))
-            combinedSettings = {
-              ...combinedSettings,
-              ...settings
-            }
-            commands = [ ...commands, ...settings.commands ]
+    if (vscode.workspace && vscode.workspace.rootPath) {
+      fs.readFile(path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json'), (err, buffer) => {
+        if (!err) {
+          const settings = JSON.parse(strip(buffer.toString()))
+          combinedSettings = {
+            ...combinedSettings,
+            ...settings
           }
-          done({ ...combinedSettings, commands })
-        })
-      } else {
+          commands = [ ...commands, ...settings.commands ]
+        }
         done({ ...combinedSettings, commands })
-      }
-    })
+      })
+    } else {
+      done({ ...combinedSettings, commands })
+    }
   })
 }
 
 function activate (context) {
   try {
-    const homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+    const homePath = context.extensionPath
     let workspaceSettings = false
-    let settingsPath = path.join(homePath, '.vscode', 'commandbar.json')
+    let settingsPath = path.join(homePath, 'commandbar.json')
     const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
       fs.stat(settingsPath, (err) => {
         if (!err && workspaceSettings) {
@@ -145,7 +135,7 @@ function activate (context) {
       Object.keys(statusBarItems).forEach((key) => {
         statusBarItems[key].hide()
       })
-      readSettings((settings) => {
+      readSettings(context, (settings) => {
         settings.commands.forEach((command) => {
           commandIndex += 1
           const alignment = command.alignment === 'right' ? vscode.StatusBarAlignment.Right : vscode.StatusBarAlignment.Left
