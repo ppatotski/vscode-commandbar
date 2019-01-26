@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.26 (Jan 26, 2019)
+- Improvement: Global Settings file location change
+
 ## 0.2.25 (Dec 3, 2018)
 - Improvement: Combine global and local settings
 
