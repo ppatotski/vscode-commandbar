@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.27 (Jan 27, 2019)
+- Issue: Fixed npm severity vulnerability
+
 ## 0.2.26 (Jan 26, 2019)
 - Improvement: Global Settings file location change
 

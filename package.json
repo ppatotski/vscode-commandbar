@@ -2,7 +2,7 @@
   "name": "vscode-commandbar",
   "displayName": "vscode-commandbar",
   "description": "Visual Studio Code Command bar",
-  "version": "0.2.26",
+  "version": "0.2.27",
   "publisher": "gsppvo",
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://github.com/ppatotski/vscode-commandbar",
@@ -83,11 +83,9 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@types/mocha": "^2.2.44",
     "@types/node": "^6.0.90",
     "standard": "^12.0.1",
-    "mocha": "^2.3.3",
-    "vscode": "^1.1.6"
+    "vscode": "^1.1.28"
   },
   "dependencies": {
     "strip-json-comments": "^2.0.1",
