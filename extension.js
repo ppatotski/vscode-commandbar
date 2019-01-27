@@ -55,7 +55,7 @@ const resolveVariables = function resolveVariables (commandLine) {
 }
 
 function readSettings (context, done) {
-  const homePath = context.extensionPath
+  const homePath = path.dirname(context.extensionPath)
   fs.readFile(path.join(homePath, 'commandbar.json'), (err, buffer) => {
     let combinedSettings = {}
     let commands = []
@@ -84,7 +84,7 @@ function readSettings (context, done) {
 
 function activate (context) {
   try {
-    const homePath = context.extensionPath
+    const homePath = path.dirname(context.extensionPath)
     let workspaceSettings = false
     let settingsPath = path.join(homePath, 'commandbar.json')
     const vsSettingsCommand = vscode.commands.registerCommand('extension.commandbar.settings', () => {
