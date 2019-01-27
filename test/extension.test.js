@@ -1,12 +1,11 @@
-const myExtension = require('../extension');
+const myExtension = require('../extension')
 
-suite("Extension Tests", function() {
+suite('Extension Tests', function () {
+  test('activate', function () {
+    myExtension.activate({ subscriptions: [] })
+  })
 
-	test("activate", function() {
-		myExtension.activate({ subscriptions: [] });
-	});
-
-	test("deactivate", function() {
-		myExtension.deactivate();
-	});
-});
+  test('deactivate', function () {
+    myExtension.deactivate()
+  })
+})
