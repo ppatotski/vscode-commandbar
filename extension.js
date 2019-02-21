@@ -27,10 +27,10 @@ const variableRegEx = /\$\{(.*?)\}/g
 const resolveVariablesFunctions = {
   env: (name) => process.env[name.toUpperCase()],
   cwd: () => process.cwd(),
-  workspaceRoot: () => vscode.workspace.rootPath,
-  workspaceFolder: () => vscode.workspace.rootPath,
-  workspaceRootFolderName: () => path.basename(vscode.workspace.rootPath),
-  workspaceFolderBasename: () => path.basename(vscode.workspace.rootPath),
+  workspaceRoot: () => getWorkspaceFolder(),
+  workspaceFolder: () => getWorkspaceFolder(),
+  workspaceRootFolderName: () => path.basename(getWorkspaceFolder()),
+  workspaceFolderBasename: () => path.basename(getWorkspaceFolder()),
   lineNumber: () => vscode.window.activeTextEditor.selection.active.line,
   selectedText: () => vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection),
   file: () => vscode.window.activeTextEditor.document.fileName,
@@ -63,9 +63,10 @@ function readSettings (context, done) {
       combinedSettings = JSON.parse(strip(buffer.toString()))
       commands = combinedSettings.commands
     }
+    const workspaceFolder = getWorkspaceFolder()
 
-    if (vscode.workspace && vscode.workspace.rootPath) {
-      fs.readFile(path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json'), (err, buffer) => {
+    if (workspaceFolder) {
+      fs.readFile(path.join(workspaceFolder, '.vscode', 'commandbar.json'), (err, buffer) => {
         if (!err) {
           const settings = JSON.parse(strip(buffer.toString()))
           combinedSettings = {
@@ -82,6 +83,50 @@ function readSettings (context, done) {
   })
 }
 
+function getWorkspaceFolder () {
+  let folder
+  if (vscode.workspace) {
+    if (vscode.window.activeTextEditor) {
+      folder = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri).uri.path
+    } else if (vscode.workspace.workspaceFolders.length > 0) {
+      folder = vscode.workspace.workspaceFolders[0].uri.path
+    }
+  }
+  return folder
+}
+
+function getCurrentItemsKey () {
+  return getWorkspaceFolder() || 'globalOnly'
+}
+
+function getCurrentItems () {
+  const workspaceKey = getCurrentItemsKey()
+  if (!statusBarItems[workspaceKey]) {
+    statusBarItems[workspaceKey] = {}
+  }
+  return statusBarItems[workspaceKey]
+}
+
+function clearItems () {
+  Object.keys(statusBarItems).forEach(key => {
+    const items = statusBarItems[key]
+    Object.keys(items).forEach(key => {
+      items[key].hide()
+    })
+  })
+}
+
+function destroyItems () {
+  Object.keys(statusBarItems).forEach(key => {
+    const items = statusBarItems[key]
+    Object.keys(items).forEach(key => {
+      if (items[key].process) {
+        kill(items[key].process.pid)
+      }
+    })
+  })
+}
+
 function activate (context) {
   try {
     const homePath = path.dirname(context.extensionPath)
@@ -95,7 +140,7 @@ function activate (context) {
           })
         } else {
           const options = []
-          if (vscode.workspace && vscode.workspace.rootPath) {
+          if (vscode.workspace && getWorkspaceFolder()) {
             options.push('Create Workspace Settings')
           }
           if (err) {
@@ -108,7 +153,7 @@ function activate (context) {
           vscode.window.showQuickPick(options)
             .then((option) => {
               if (option === 'Create Workspace Settings') {
-                settingsPath = path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json')
+                settingsPath = path.join(getWorkspaceFolder(), '.vscode', 'commandbar.json')
               }
               if (option === 'Create Workspace Settings' || option === 'Create Global Settings') {
                 vscode.workspace.openTextDocument(vscode.Uri.parse(`untitled:${settingsPath}`)).then(doc => {
@@ -131,190 +176,195 @@ function activate (context) {
     const channel = vscode.window.createOutputChannel('Commandbar')
     let commandIndex = 0
     let settings
-    const refreshCommands = function refreshCommands () {
-      Object.keys(statusBarItems).forEach((key) => {
-        statusBarItems[key].hide()
-      })
+    const refreshCommands = function refreshCommands (hard = false) {
+      clearItems()
+      const currentItems = getCurrentItems()
       readSettings(context, (settings) => {
         settings.commands.forEach((command) => {
-          commandIndex += 1
-          const alignment = command.alignment === 'right' ? vscode.StatusBarAlignment.Right : vscode.StatusBarAlignment.Left
-          const statusBarItem = vscode.window.createStatusBarItem(alignment, command.priority)
-          const commandId = `extension.commandbar.command_${commandIndex}`
-          const inProgress = `${command.text} (in progress)`
-          const skipSwitchToOutput = command.skipSwitchToOutput === undefined ? settings.skipSwitchToOutput : command.skipSwitchToOutput
-          const skipTerminateQuickPick = command.skipTerminateQuickPick === undefined ? settings.skipTerminateQuickPick : command.skipTerminateQuickPick
-          const skipErrorMessage = command.skipErrorMessage === undefined ? settings.skipErrorMessage : command.skipErrorMessage
+          const commandId = command.text
+          if (currentItems[commandId] && !hard) {
+            currentItems[commandId].show()
+          } else {
+            commandIndex += 1
+            const commandRegisteredId = `extension.commandbar.command_${commandIndex}`
+            const alignment = command.alignment === 'right' ? vscode.StatusBarAlignment.Right : vscode.StatusBarAlignment.Left
+            const statusBarItem = vscode.window.createStatusBarItem(alignment, command.priority)
+            const inProgress = `${command.text} (in progress)`
+            const skipSwitchToOutput = command.skipSwitchToOutput === undefined ? settings.skipSwitchToOutput : command.skipSwitchToOutput
+            const skipTerminateQuickPick = command.skipTerminateQuickPick === undefined ? settings.skipTerminateQuickPick : command.skipTerminateQuickPick
+            const skipErrorMessage = command.skipErrorMessage === undefined ? settings.skipErrorMessage : command.skipErrorMessage
 
-          statusBarItem.text = command.text
-          statusBarItem.tooltip = command.tooltip
-          statusBarItem.color = command.color
-          statusBarItem.command = commandId
-          statusBarItem.show()
-          statusBarItems[commandId] = statusBarItem
-          context.subscriptions.push(statusBarItem)
+            statusBarItem.text = command.text
+            statusBarItem.tooltip = command.tooltip
+            statusBarItem.color = command.color
+            statusBarItem.command = commandRegisteredId
+            statusBarItem.show()
+            currentItems[commandId] = statusBarItem
+            context.subscriptions.push(statusBarItem)
 
-          const showOutput = function showOutput () {
-            if (!skipSwitchToOutput) {
-              channel.show()
-            }
-          }
-          const vsCommand = vscode.commands.registerCommand(commandId, () => {
-            const executeCommand = function executeCommand () {
-              const exec = function exec (commandContent) {
-                try {
-                  const process = childProcess.exec(resolveVariables(commandContent), { cwd: vscode.workspace.rootPath, maxBuffer: 1073741824 }, (err) => {
-                    statusBarItem.text = command.text
-                    statusBarItem.process = undefined
-                    if (!statusBarItem.aboutToBeKilled) {
-                      if (!skipErrorMessage && err) {
-                        vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
-                      }
-                      showOutput()
-                    }
-                    statusBarItem.aboutToBeKilled = false
-                  })
-                  process.stdout.on('data', data => channel.append(data))
-                  process.stderr.on('data', data => channel.append(data))
-                  statusBarItem.process = process
-                } catch (err) {
-                  vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
-                  channel.append(err.toString())
-                  showOutput()
+            const vsCommand = vscode.commands.registerCommand(commandRegisteredId, () => {
+              const showOutput = function showOutput () {
+                if (!skipSwitchToOutput) {
+                  channel.show()
                 }
               }
-
-              if (command.commandType === 'script') {
-                exec(`npm run ${command.command}`)
-              } else if (command.commandType === 'palette') {
-                const executeNext = function executeNext (palette, index) {
+              const executeCommand = function executeCommand () {
+                const exec = function exec (commandContent) {
                   try {
-                    let [cmd, ...args] = palettes[index].split('|')
-                    if (args) args = args.map(arg => resolveVariables(arg))
-                    vscode.commands.executeCommand(cmd, ...args).then(() => {
-                      index += 1
-                      if (index < palettes.length) {
-                        executeNext(palettes, index)
+                    const process = childProcess.exec(resolveVariables(commandContent), { cwd: getWorkspaceFolder(), maxBuffer: 1073741824 }, (err) => {
+                      statusBarItem.text = command.text
+                      statusBarItem.process = undefined
+                      if (!statusBarItem.aboutToBeKilled) {
+                        if (!skipErrorMessage && err) {
+                          vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
+                        }
+                        showOutput()
                       }
-                    }, (err) => {
-                      vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message}`)
+                      statusBarItem.aboutToBeKilled = false
                     })
+                    process.stdout.on('data', data => channel.append(data))
+                    process.stderr.on('data', data => channel.append(data))
+                    statusBarItem.process = process
                   } catch (err) {
                     vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
                     channel.append(err.toString())
                     showOutput()
                   }
                 }
-                const palettes = command.command.split(',')
-                executeNext(palettes, 0)
-              } else {
-                exec(command.command)
-              }
-            }
 
-            if (command.commandType === 'file') {
-              const openFile = function openFile (filePath) {
-                try {
-                  const rawPath = resolveVariables(filePath)
-                  const uri = vscode.Uri.parse(rawPath)
-                  if (uri.scheme) {
-                    vscode.commands.executeCommand('vscode.open', uri)
-                  } else {
-                    let file = rawPath
-                    if (file[0] === '~') {
-                      file = file.replace('~', homePath)
-                    } else if (file[0] === '.') {
-                      file = file.replace('.', vscode.workspace.rootPath)
+                if (command.commandType === 'script') {
+                  exec(`npm run ${command.command}`)
+                } else if (command.commandType === 'palette') {
+                  const executeNext = function executeNext (palette, index) {
+                    try {
+                      let [cmd, ...args] = palettes[index].split('|')
+                      if (args) args = args.map(arg => resolveVariables(arg))
+                      vscode.commands.executeCommand(cmd, ...args).then(() => {
+                        index += 1
+                        if (index < palettes.length) {
+                          executeNext(palettes, index)
+                        }
+                      }, (err) => {
+                        vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message}`)
+                      })
+                    } catch (err) {
+                      vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
+                      channel.append(err.toString())
+                      showOutput()
                     }
-                    vscode.workspace.openTextDocument(file).then(doc => {
-                      vscode.window.showTextDocument(doc)
-                    })
                   }
-                } catch (err) {
-                  vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
-                  channel.append(err.toString())
-                  showOutput()
-                }
-              }
-              if (command.command) {
-                let files = command.command.split(',').map(file => file.split('|'))
-                if (files.length > 1) {
-                  if (!vscode.workspace.rootPath) {
-                    files = files.filter(file => file[0][0] !== '.')
-                  }
-                  vscode.window.showQuickPick(files.map(file => file.length > 1 ? file[1] : file[0]))
-                    .then((label) => {
-                      openFile(files.find(file => file.length > 1 ? file[1] === label : file[0] === label)[0])
-                    })
+                  const palettes = command.command.split(',')
+                  executeNext(palettes, 0)
                 } else {
-                  openFile(files[0][0])
+                  exec(command.command)
                 }
               }
-            } else {
-              if (statusBarItem.process) {
-                if (!skipTerminateQuickPick) {
-                  const options = ['Terminate', 'Terminate and Execute', 'Execute without terminating already running command', 'Cancel']
 
-                  vscode.window.showQuickPick(options)
-                    .then((option) => {
-                      if (option === options[0]) {
-                        statusBarItem.aboutToBeKilled = true
-                        kill(statusBarItem.process.pid, 'SIGTERM', () => {
-                          channel.appendLine('Terminated!')
-                          statusBarItem.process = undefined
-                          statusBarItem.text = command.text
-                        })
-                      } else if (option === options[1]) {
-                        statusBarItem.aboutToBeKilled = true
-                        kill(statusBarItem.process.pid, 'SIGTERM', () => {
-                          statusBarItem.text = inProgress
-                          showOutput()
+              if (command.commandType === 'file') {
+                const openFile = function openFile (filePath) {
+                  try {
+                    const rawPath = resolveVariables(filePath)
+                    const uri = vscode.Uri.parse(rawPath)
+                    if (uri.scheme) {
+                      vscode.commands.executeCommand('vscode.open', uri)
+                    } else {
+                      let file = rawPath
+                      if (file[0] === '~') {
+                        file = file.replace('~', homePath)
+                      } else if (file[0] === '.') {
+                        file = file.replace('.', getWorkspaceFolder())
+                      }
+                      vscode.workspace.openTextDocument(file).then(doc => {
+                        vscode.window.showTextDocument(doc)
+                      })
+                    }
+                  } catch (err) {
+                    vscode.window.showErrorMessage(`Execution of '${command.text}' command has failed: ${err.message} (see output for details)`)
+                    channel.append(err.toString())
+                    showOutput()
+                  }
+                }
+                if (command.command) {
+                  let files = command.command.split(',').map(file => file.split('|'))
+                  if (files.length > 1) {
+                    if (!getWorkspaceFolder()) {
+                      files = files.filter(file => file[0][0] !== '.')
+                    }
+                    vscode.window.showQuickPick(files.map(file => file.length > 1 ? file[1] : file[0]))
+                      .then((label) => {
+                        openFile(files.find(file => file.length > 1 ? file[1] === label : file[0] === label)[0])
+                      })
+                  } else {
+                    openFile(files[0][0])
+                  }
+                }
+              } else {
+                if (statusBarItem.process) {
+                  if (!skipTerminateQuickPick) {
+                    const options = ['Terminate', 'Terminate and Execute', 'Execute without terminating already running command', 'Cancel']
+
+                    vscode.window.showQuickPick(options)
+                      .then((option) => {
+                        if (option === options[0]) {
+                          statusBarItem.aboutToBeKilled = true
+                          kill(statusBarItem.process.pid, 'SIGTERM', () => {
+                            channel.appendLine('Terminated!')
+                            statusBarItem.process = undefined
+                            statusBarItem.text = command.text
+                          })
+                        } else if (option === options[1]) {
+                          statusBarItem.aboutToBeKilled = true
+                          kill(statusBarItem.process.pid, 'SIGTERM', () => {
+                            statusBarItem.text = inProgress
+                            showOutput()
+                            channel.clear()
+                            channel.appendLine(`Execute '${command.text}' command...`)
+                            executeCommand()
+                          })
+                        } else if (option === options[2]) {
                           channel.clear()
                           channel.appendLine(`Execute '${command.text}' command...`)
+                          statusBarItem.process = undefined
                           executeCommand()
-                        })
-                      } else if (option === options[2]) {
-                        channel.clear()
-                        channel.appendLine(`Execute '${command.text}' command...`)
-                        statusBarItem.process = undefined
-                        executeCommand()
-                        statusBarItem.text = inProgress
-                        showOutput()
-                      }
+                          statusBarItem.text = inProgress
+                          showOutput()
+                        }
+                      })
+                  } else {
+                    statusBarItem.aboutToBeKilled = true
+                    kill(statusBarItem.process.pid, 'SIGTERM', () => {
+                      channel.appendLine('Terminated!')
+                      statusBarItem.process = undefined
+                      statusBarItem.text = command.text
                     })
+                  }
                 } else {
-                  statusBarItem.aboutToBeKilled = true
-                  kill(statusBarItem.process.pid, 'SIGTERM', () => {
-                    channel.appendLine('Terminated!')
-                    statusBarItem.process = undefined
-                    statusBarItem.text = command.text
-                  })
-                }
-              } else {
-                if (command.commandType !== 'palette') {
-                  channel.clear()
-                  channel.appendLine(`Execute '${command.text}' command...`)
-                  executeCommand()
-                  statusBarItem.text = inProgress
-                  showOutput()
-                } else {
-                  executeCommand()
+                  if (command.commandType !== 'palette') {
+                    channel.clear()
+                    channel.appendLine(`Execute '${command.text}' command...`)
+                    executeCommand()
+                    statusBarItem.text = inProgress
+                    showOutput()
+                  } else {
+                    executeCommand()
+                  }
                 }
               }
-            }
-          })
-          context.subscriptions.push(vsCommand)
+            })
+            context.subscriptions.push(vsCommand)
+          }
         })
       })
     }
     vscode.window.onDidChangeActiveTextEditor((event) => {
       if (settings) {
         settings.commands.forEach(command => {
+          const currentItems = getCurrentItems()
           if (command.language) {
             let statusBarItem
-            Object.keys(statusBarItems).forEach((key) => {
-              if (statusBarItems[key].text === command.text) {
-                statusBarItem = statusBarItems[key]
+            Object.keys(currentItems).forEach((key) => {
+              if (currentItems[key].text === command.text) {
+                statusBarItem = currentItems[key]
               }
             })
             vscode.languages.match({ language: command.language }, event.document)
@@ -329,11 +379,11 @@ function activate (context) {
     })
     vscode.workspace.onDidSaveTextDocument((doc) => {
       if (vscode.languages.match({ pattern: settingsPath }, doc)) {
-        refreshCommands()
+        refreshCommands(true)
       }
     })
-    if (vscode.workspace && vscode.workspace.rootPath) {
-      const workspacePath = path.join(vscode.workspace.rootPath, '.vscode', 'commandbar.json')
+    if (vscode.workspace && getWorkspaceFolder()) {
+      const workspacePath = path.join(getWorkspaceFolder(), '.vscode', 'commandbar.json')
       fs.stat(workspacePath, (err) => {
         if (!err) {
           settingsPath = workspacePath
@@ -352,11 +402,7 @@ function activate (context) {
 exports.activate = activate
 
 function deactivate () {
-  Object.keys(statusBarItems).forEach((key) => {
-    if (statusBarItems[key].process) {
-      kill(statusBarItems[key].process.pid)
-    }
-  })
+  destroyItems()
 }
 
 exports.deactivate = deactivate
