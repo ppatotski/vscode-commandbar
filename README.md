@@ -1,13 +1,6 @@
-# Visual Studio Code Command bar
+# Visual Studio Code Command Bar
 
-A Command bar within VSCode Status bar.
-
-> Global Settings have been moved to extention folder. If you do not see global commands then:
-> 1. Open VSCode with no workspace openned.
-> 2. Create Global Settings (`Ctrl+Shift+P` or `Cmd+Shift+P` type `Commandbar: Settings`).
-> 3. Copy commands from existing global file (`~/<user>/commandbar.json`) to newly created one.
->
-> Sorry for inconvenience.
+A Command Bar within VSCode Status Bar.
 
 ## Get Started
 
@@ -32,6 +25,7 @@ A Command bar within VSCode Status bar.
 	- Apply settings immediately after saving changes in `./.vscode/commandbar.json` file
 	- Support comments in JSON as an extension to JSON specification
 	- Combine global and local settings
+	- Support multi-folder workspace mode
 
 [![Demo](demo.gif)](demo.gif)
 

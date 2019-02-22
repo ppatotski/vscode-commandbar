@@ -6,6 +6,7 @@ const path = require('path')
 const strip = require('strip-json-comments')
 
 const statusBarItems = {}
+let currentFolder
 const exampleJson = `{
   "skipTerminateQuickPick": true,
   "skipSwitchToOutput": false,
@@ -83,16 +84,28 @@ function readSettings (context, done) {
   })
 }
 
-function getWorkspaceFolder () {
+function getWorkspaceFolder (activeTextEditor = vscode.window.activeTextEditor) {
   let folder
   if (vscode.workspace) {
-    if (vscode.window.activeTextEditor) {
-      folder = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri).uri.path
+    if (vscode.workspace.workspaceFolders.length === 1) {
+      folder = vscode.workspace.workspaceFolders[0].uri.path
+    } else if (activeTextEditor) {
+      const folderObject = vscode.workspace.getWorkspaceFolder(activeTextEditor.document.uri)
+      if (folderObject) {
+        folder = folderObject.uri.path
+      } else {
+        folder = currentFolder
+      }
     } else if (vscode.workspace.workspaceFolders.length > 0) {
       folder = vscode.workspace.workspaceFolders[0].uri.path
     }
   }
   return folder
+}
+
+function isWorkspaceChanged (activeTextEditor) {
+  const newFolder = getWorkspaceFolder(activeTextEditor)
+  return currentFolder !== newFolder || (!currentFolder && !newFolder)
 }
 
 function getCurrentItemsKey () {
@@ -176,7 +189,17 @@ function activate (context) {
     const channel = vscode.window.createOutputChannel('Commandbar')
     let commandIndex = 0
     let settings
-    const refreshCommands = function refreshCommands (hard = false) {
+    const refreshCommands = function refreshCommands (hard = false, activeTextEditor, done) {
+      if (!hard) {
+        if (!isWorkspaceChanged(activeTextEditor)) {
+          if (done) {
+            done()
+          }
+          return
+        } else {
+          currentFolder = getWorkspaceFolder(activeTextEditor)
+        }
+      }
       clearItems()
       const currentItems = getCurrentItems()
       readSettings(context, (settings) => {
@@ -354,31 +377,39 @@ function activate (context) {
             context.subscriptions.push(vsCommand)
           }
         })
+        if (done) {
+          done()
+        }
       })
     }
     vscode.window.onDidChangeActiveTextEditor((event) => {
-      if (settings) {
-        settings.commands.forEach(command => {
-          const currentItems = getCurrentItems()
-          if (command.language) {
-            let statusBarItem
-            Object.keys(currentItems).forEach((key) => {
-              if (currentItems[key].text === command.text) {
-                statusBarItem = currentItems[key]
+      if (event) {
+        refreshCommands(false, event, () => {
+          if (settings) {
+            settings.commands.forEach(command => {
+              const currentItems = getCurrentItems()
+              if (command.language) {
+                let statusBarItem
+                Object.keys(currentItems).forEach((key) => {
+                  if (currentItems[key].text === command.text) {
+                    statusBarItem = currentItems[key]
+                  }
+                })
+                vscode.languages.match({ language: command.language }, event.document)
+                if (vscode.languages.match({ language: command.language }, event.document)) {
+                  statusBarItem.show()
+                } else {
+                  statusBarItem.hide()
+                }
               }
             })
-            vscode.languages.match({ language: command.language }, event.document)
-            if (vscode.languages.match({ language: command.language }, event.document)) {
-              statusBarItem.show()
-            } else {
-              statusBarItem.hide()
-            }
           }
         })
       }
     })
     vscode.workspace.onDidSaveTextDocument((doc) => {
-      if (vscode.languages.match({ pattern: settingsPath }, doc)) {
+      const workspacePath = path.join(getWorkspaceFolder(), '.vscode', 'commandbar.json')
+      if (vscode.languages.match({ pattern: workspacePath }, doc)) {
         refreshCommands(true)
       }
     })
