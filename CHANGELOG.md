@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.3.0 (Fab 22, 2019)
+- Feature: Support multi-folder workspace mode
+
 ## 0.2.27 (Jan 27, 2019)
 - Issue: Fixed npm severity vulnerability
 
