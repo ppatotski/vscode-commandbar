@@ -88,16 +88,16 @@ function getWorkspaceFolder (activeTextEditor = vscode.window.activeTextEditor) 
   let folder
   if (vscode.workspace) {
     if (vscode.workspace.workspaceFolders.length === 1) {
-      folder = vscode.workspace.workspaceFolders[0].uri.path
+      folder = vscode.workspace.workspaceFolders[0].uri.fsPath
     } else if (activeTextEditor) {
       const folderObject = vscode.workspace.getWorkspaceFolder(activeTextEditor.document.uri)
       if (folderObject) {
-        folder = folderObject.uri.path
+        folder = folderObject.uri.fsPath
       } else {
         folder = currentFolder
       }
     } else if (vscode.workspace.workspaceFolders.length > 0) {
-      folder = vscode.workspace.workspaceFolders[0].uri.path
+      folder = vscode.workspace.workspaceFolders[0].uri.fsPath
     }
   }
   return folder
