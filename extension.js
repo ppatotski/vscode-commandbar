@@ -32,17 +32,24 @@ const resolveVariablesFunctions = {
   workspaceFolder: () => getWorkspaceFolder(),
   workspaceRootFolderName: () => path.basename(getWorkspaceFolder()),
   workspaceFolderBasename: () => path.basename(getWorkspaceFolder()),
-  lineNumber: () => vscode.window.activeTextEditor.selection.active.line,
-  selectedText: () => vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection),
-  file: () => vscode.window.activeTextEditor.document.fileName,
-  fileDirname: () => path.dirname(vscode.window.activeTextEditor.document.fileName),
-  fileExtname: () => path.extname(vscode.window.activeTextEditor.document.fileName),
-  fileBasename: () => path.basename(vscode.window.activeTextEditor.document.fileName),
+  lineNumber: () => vscode.window.activeTextEditor?.selection.active.line,
+  selectedText: () => vscode.window.activeTextEditor?.document.getText(vscode.window.activeTextEditor.selection),
+  file: () => getActiveEditorName(),
+  fileDirname: () => path.dirname(getActiveEditorName()),
+  fileExtname: () => path.extname(getActiveEditorName()),
+  fileBasename: () => path.basename(getActiveEditorName()),
   fileBasenameNoExtension: () => {
-    const basename = path.basename(vscode.window.activeTextEditor.document.fileName)
+    const basename = path.basename(getActiveEditorName())
     return basename.slice(0, basename.length - path.extname(basename).length)
   },
   execPath: () => process.execpath
+}
+
+function getActiveEditorName() {
+  if (vscode.window.activeTextEditor) {
+    return vscode.window.activeTextEditor.document.fileName
+  }
+  return ""
 }
 
 const resolveVariables = function resolveVariables (commandLine) {
@@ -86,7 +93,7 @@ function readSettings (context, done) {
 
 function getWorkspaceFolder (activeTextEditor = vscode.window.activeTextEditor) {
   let folder
-  if (vscode.workspace) {
+  if (vscode.workspace?.workspaceFolders) {
     if (vscode.workspace.workspaceFolders.length === 1) {
       folder = vscode.workspace.workspaceFolders[0].uri.fsPath
     } else if (activeTextEditor) {
